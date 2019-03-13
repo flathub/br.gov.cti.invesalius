@@ -1,4 +1,4 @@
-# gov.cti.InVesalius
+# br.gov.cti.invesalius
 
 ## Prerequisites
 
