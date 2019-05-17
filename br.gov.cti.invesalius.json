@@ -127,6 +127,7 @@
     "python3-scipy.json",
     "python3-cython.json",
     "python3-setuptools_scm.json",
+    "python3-wheel.json",
     "python3-python-dateutil.json",
     "python3-matplotlib.json",
     "python3-scikit-image.json",
