@@ -1,0 +1,14 @@
+{
+    "name": "python3-h5py",
+    "buildsystem": "simple",
+    "build-commands": [
+        "pip3 install --no-index --find-links=\"file://${PWD}\" --prefix=${FLATPAK_DEST} h5py"
+    ],
+    "sources": [
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/43/27/a6e7dcb8ae20a4dbf3725321058923fec262b6f7835179d78ccc8d98deec/h5py-2.9.0.tar.gz",
+            "sha256": "9d41ca62daf36d6b6515ab8765e4c8c4388ee18e2a665701fef2b41563821002"
+        }
+    ]
+}

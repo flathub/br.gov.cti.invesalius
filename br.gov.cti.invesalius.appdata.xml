@@ -40,6 +40,14 @@
     </screenshots>
 
     <releases>
+        <release version="3.1.99993" type="development" date="2019-05-17" urgency="high">
+            <description>
+                <p>Density tools</p>
+                <p>Export project to HDF5 and Nifti</p>
+                <p>XDG support</p>
+                <p>Using JSON to save configs</p>
+            </description>
+        </release>
         <release version="3.1.99992" type="development" date="2018-09-10" urgency="high">
             <description>
                 <p>Ported to Python3</p>

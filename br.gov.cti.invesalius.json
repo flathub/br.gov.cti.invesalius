@@ -23,7 +23,8 @@
         "/lib/pkgconfig",
         "/lib/cmake",
         "/share/cmake",
-        "/share/doc"
+        "/share/doc",
+        "/share/hdf5_examples"
     ],
     "modules": [{
         "name": "vtk",
@@ -134,6 +135,32 @@
     "python3-pyserial.json",
     "python3-psutil.json",
     {
+        "name" : "hdf5",
+        "no-autogen" : true,
+        "sources" : [
+            {
+                "type" : "archive",
+                "url" : "https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.4/src/hdf5-1.10.4.tar.bz2",
+                "sha256" : "1267ff06aaedc04ca25f7c6026687ea2884b837043431195f153401d942b28df"
+            }
+        ]
+    },
+    {
+        "name" : "py_pkgconfig",
+        "buildsystem": "simple",
+        "build-commands": [
+            "pip3 install --no-index --find-links=\"file://${PWD}\" --prefix=${FLATPAK_DEST} pkgconfig"
+        ],
+        "sources" : [
+        {
+            "type": "file",
+            "url": "https://files.pythonhosted.org/packages/b4/2c/bf434cb5a6590417e1d4468050ec317ea17fd6231c2a256df4646c11e588/pkgconfig-1.5.1-py2.py3-none-any.whl",
+            "sha256": "cddf2d7ecadb272178a942eb852a9dee46bda2adcc36c3416b0fef47a4ed9f38"
+        }
+        ]
+    },
+    "python3-h5py.json",
+    {
         "name": "invesalius",
         "buildsystem": "simple",
         "build-commands": [
@@ -160,8 +187,8 @@
         "sources": [
             {
                 "type": "archive",
-                "url": "https://github.com/invesalius/invesalius3/archive/v3.1.99992.tar.gz",
-                "sha256": "d72e7f5957504ace5688edc0f083a11889c9d4a0937db75669379853501c32de"
+                "url": "https://github.com/invesalius/invesalius3/archive/v3.1.99993.tar.gz",
+                "sha256": "4ab2410f78bc7cbbaba84bd4d8f27820bb9f9a31fb2e36323709149d2394504f"
             }
         ]
     },
