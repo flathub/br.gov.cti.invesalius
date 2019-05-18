@@ -5,6 +5,7 @@
     <summary>3D medical imaging reconstruction software</summary>
     <metadata_license>FSFAP</metadata_license>
     <project_license>GPL-2.0-only</project_license>
+    <content_rating type="oars-1.0" />
     <developer_name>Centro de Tecnologia da Informação Renato Archer</developer_name>
     <description>
         <p>
@@ -38,7 +39,9 @@
             <image>https://invesalius.github.io/images/screenshot/screen2.png</image>
         </screenshot>
     </screenshots>
-
+    <url type="homepage">https://www.cti.gov.br/invesalius/</url>
+    <url type="bugtracker">https://github.com/invesalius/invesalius3/issues</url>
+    <url type="translate">https://www.transifex.com/invesalius/invesalius3/</url>
     <releases>
         <release version="3.1.99993" type="development" date="2019-05-17" urgency="high">
             <description>
