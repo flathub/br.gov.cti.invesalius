@@ -7,18 +7,13 @@
     "sources": [
         {
             "type": "file",
-            "url": "https://files.pythonhosted.org/packages/17/74/7c3ced03c3c76b9f98e4a0edae1801755a7599ebf481c04d9f77dfff17e3/wxPython-4.0.4.tar.gz",
-            "sha256": "0d9ef4260cb2f3e23ed9dcf6baa905ba585ac7d631613cddc299c4c83463ae29"
+            "url": "https://files.pythonhosted.org/packages/9a/a1/9c081e04798eb134b63def3db121a6e4436e1d84e76692503deef8e75423/wxPython-4.0.6.tar.gz",
+            "sha256": "35cc8ae9dd5246e2c9861bb796026bbcb9fb083e4d49650f776622171ecdab37"
         },
         {
             "type": "file",
-            "url": "https://files.pythonhosted.org/packages/3c/7e/443be24431324bd34d22dd9d11cc845d995bcd3b500676bcf23142756975/Pillow-5.4.1.tar.gz",
-            "sha256": "5233664eadfa342c639b9b9977190d64ad7aca4edc51a966394d7e08e7f38a9f"
-        },
-        {
-            "type": "file",
-            "url": "https://files.pythonhosted.org/packages/dd/bf/4138e7bfb757de47d1f4b6994648ec67a51efe58fa907c1e11e350cddfca/six-1.12.0.tar.gz",
-            "sha256": "d16a0141ec1a18405cd4ce8b4613101da75da0e9a7aec5bdd4fa804d0e0eba73"
+            "url": "https://files.pythonhosted.org/packages/bf/d7/a2568f4596b75d2c6e2b4094a7e64f620decc7887f69a1f2811931ea15b9/pathlib2-2.3.3.tar.gz",
+            "sha256": "25199318e8cc3c25dcb45cbe084cc061051336d5a9ea2a12448d3d8cb748f742"
         }
     ],
     "cleanup": [

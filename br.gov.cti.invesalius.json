@@ -35,8 +35,8 @@
         "sources": [
             {
                 "type": "archive",
-                "url": "https://www.vtk.org/files/release/7.1/VTK-7.1.1.tar.gz",
-                "sha256": "2d5cdd048540144d821715c718932591418bb48f5b6bb19becdae62339efa75a"
+                "url": "https://www.vtk.org/files/release/8.2/VTK-8.2.0.tar.gz",
+                "sha256": "34c3dc775261be5e45a8049155f7228b6bd668106c72a3c435d95730d17d57bb"
             }
         ],
         "buildsystem": "cmake-ninja",
@@ -83,8 +83,8 @@
         "builddir": true,
         "sources": [{
             "type": "archive",
-            "url": "https://downloads.sourceforge.net/project/gdcm/gdcm 2.x/GDCM 2.8.9/gdcm-2.8.9.tar.gz",
-            "sha256": "a2da88b7b3cbf9e76a9df3e89d06d057cca9ce54fc62fb059e04f47bf056b727"
+            "url": "https://github.com/malaterre/GDCM/archive/v3.0.0.tar.gz",
+            "sha256": "3de524690102bfa3e9c3a81ff3f17733138183f76b7a5f7d072b20024a255680"
         }],
         "buildsystem": "cmake-ninja",
         "config-opts": [
@@ -121,11 +121,12 @@
         ]
     },
     "shared-modules/glu/glu-9.0.0.json",
-    "python3-Pillow.json",
-    "python3-wxpython.json",
     "python3-numpy.json",
     "python3-scipy.json",
+    "python3-Pillow.json",
     "python3-cython.json",
+    "python3-pathlib2.json",
+    "python3-wxpython.json",
     "python3-setuptools_scm.json",
     "python3-wheel.json",
     "python3-python-dateutil.json",
@@ -190,6 +191,18 @@
                 "type": "archive",
                 "url": "https://github.com/invesalius/invesalius3/archive/v3.1.99993.tar.gz",
                 "sha256": "4ab2410f78bc7cbbaba84bd4d8f27820bb9f9a31fb2e36323709149d2394504f"
+            },
+            {
+                "type": "patch",
+                "path": "version_and_icon.patch"
+            },
+            {
+                "type": "patch",
+                "path": "resample_disproportion.patch"
+            },
+            {
+                "type": "patch",
+                "path": "comment_immediate_rendering.patch"
             }
         ]
     },
