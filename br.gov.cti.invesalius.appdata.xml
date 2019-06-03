@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 Thiago Franco de Moraes <thiago.moraes@cti.gov.br> -->
 <component type="desktop-application">
     <id>br.gov.cti.invesalius</id>
     <name>InVesalius</name>
     <summary>3D medical imaging reconstruction software</summary>
     <metadata_license>FSFAP</metadata_license>
     <project_license>GPL-2.0-only</project_license>
+    <content_rating type="oars-1.0" />
+    <update_contact>thiago.moraes_AT_cti.gov.br</update_contact>
     <developer_name>Centro de Tecnologia da Informação Renato Archer</developer_name>
+    <translation type="gettext">InVesalius</translation>
     <description>
         <p>
-            InVesalius generates 3D medical imaging reconstructions based on a sequence of 2D DICOM files acquired with CT or MRI equipments. InVesalius is internationalized (currently available in English, Portuguese, French, Spanish, Turkish, Italian, Czesh, Japanese, Catalan, Korean, Romanian and German) and provides several tools:
+            InVesalius generates 3D medical imaging reconstructions based on a sequence of 2D DICOM files acquired with CT or MRI equipments. InVesalius is internationalized (currently available in English, Portuguese, French, Spanish, Turkish, Italian, Czech, Japanese, Catalan, Korean, Romanian and German) and provides several tools:
         </p>
         <ul>
             <li>DICOM support including: (a) ACR-NEMA version 1 and 2; (b) DICOM version 3.0 (including various encodings of JPEG -lossless and lossy-, RLE)</li>
@@ -38,14 +42,16 @@
             <image>https://invesalius.github.io/images/screenshot/screen2.png</image>
         </screenshot>
     </screenshots>
-
+    <url type="homepage">https://www.cti.gov.br/invesalius/</url>
+    <url type="bugtracker">https://github.com/invesalius/invesalius3/issues</url>
+    <url type="translate">https://www.transifex.com/invesalius/invesalius3/</url>
     <releases>
         <release version="3.1.99993" type="development" date="2019-05-17" urgency="high">
             <description>
-                <p>Density tools</p>
-                <p>Export project to HDF5 and Nifti</p>
-                <p>XDG support</p>
-                <p>Using JSON to save configs</p>
+                <p>Density tools.</p>
+                <p>Export project to HDF5 and Nifti.</p>
+                <p>XDG support.</p>
+                <p>Using JSON to save configs.</p>
             </description>
         </release>
         <release version="3.1.99992" type="development" date="2018-09-10" urgency="high">
