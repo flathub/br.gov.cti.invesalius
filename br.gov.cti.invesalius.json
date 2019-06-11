@@ -189,16 +189,8 @@
         "sources": [
             {
                 "type": "archive",
-                "url": "https://github.com/invesalius/invesalius3/archive/v3.1.99993.tar.gz",
-                "sha256": "4ab2410f78bc7cbbaba84bd4d8f27820bb9f9a31fb2e36323709149d2394504f"
-            },
-            {
-                "type": "patch",
-                "path": "version_and_icon.patch"
-            },
-            {
-                "type": "patch",
-                "path": "resample_disproportion.patch"
+                "url": "https://github.com/invesalius/invesalius3/archive/v3.1.99994.tar.gz",
+                "sha256": "493aff36e000f3a98aad5b6532fd2e0f960e779a6db2821390f05e5c9e2067eb"
             },
             {
                 "type": "patch",

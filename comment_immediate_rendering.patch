@@ -1,17 +1,17 @@
 diff --git a/invesalius/data/surface.py b/invesalius/data/surface.py
-index 4a7179b6..43e9a856 100644
+index 238bb84f..deae890b 100644
 --- a/invesalius/data/surface.py
 +++ b/invesalius/data/surface.py
-@@ -378,7 +378,7 @@ class SurfaceManager():
+@@ -379,7 +379,7 @@ class SurfaceManager():
              mapper.ScalarVisibilityOn()
          else:
              mapper.ScalarVisibilityOff()
 -        mapper.ImmediateModeRenderingOn() # improve performance
-+        # mapper.ImmediateModeRenderingOn() # improve performance
++        #  mapper.ImmediateModeRenderingOn() # improve performance
  
          actor = vtk.vtkActor()
          actor.SetMapper(mapper)
-@@ -489,7 +489,7 @@ class SurfaceManager():
+@@ -490,7 +490,7 @@ class SurfaceManager():
              mapper = vtk.vtkPolyDataMapper()
              mapper.SetInputConnection(stripper.GetOutputPort())
              mapper.ScalarVisibilityOff()
@@ -20,7 +20,7 @@ index 4a7179b6..43e9a856 100644
  
              # Represent an object (geometry & properties) in the rendered scene
              actor = vtk.vtkActor()
-@@ -531,7 +531,7 @@ class SurfaceManager():
+@@ -532,7 +532,7 @@ class SurfaceManager():
          mapper.SetInputData(polydata)
          mapper.ScalarVisibilityOff()
          #  mapper.ReleaseDataFlagOn()
@@ -29,47 +29,3 @@ index 4a7179b6..43e9a856 100644
  
          # Represent an object (geometry & properties) in the rendered scene
          actor = vtk.vtkActor()
-diff --git a/invesalius/data/viewer_volume.py b/invesalius/data/viewer_volume.py
-index b49fdaf2..7116dae5 100644
---- a/invesalius/data/viewer_volume.py
-+++ b/invesalius/data/viewer_volume.py
-@@ -631,7 +631,7 @@ class Viewer(wx.Panel):
-             mapper = vtk.vtkPolyDataMapper()
-             mapper.SetInputData(normals.GetOutput())
-             mapper.ScalarVisibilityOff()
--            mapper.ImmediateModeRenderingOn()  # improve performance
-+            #  mapper.ImmediateModeRenderingOn()  # improve performance
- 
-             obj_roll = vtk.vtkActor()
-             obj_roll.SetMapper(mapper)
-@@ -919,7 +919,7 @@ class Viewer(wx.Panel):
-         obj_mapper = vtk.vtkPolyDataMapper()
-         obj_mapper.SetInputData(normals.GetOutput())
-         obj_mapper.ScalarVisibilityOff()
--        obj_mapper.ImmediateModeRenderingOn()  # improve performance
-+        #  obj_mapper.ImmediateModeRenderingOn()  # improve performance
- 
-         self.dummy_coil_actor = vtk.vtkActor()
-         self.dummy_coil_actor.SetMapper(obj_mapper)
-@@ -1192,7 +1192,7 @@ class Viewer(wx.Panel):
-         obj_mapper = vtk.vtkPolyDataMapper()
-         obj_mapper.SetInputData(normals.GetOutput())
-         obj_mapper.ScalarVisibilityOff()
--        obj_mapper.ImmediateModeRenderingOn()  # improve performance
-+        #  obj_mapper.ImmediateModeRenderingOn()  # improve performance
- 
-         self.obj_actor = vtk.vtkActor()
-         self.obj_actor.SetMapper(obj_mapper)
-diff --git a/invesalius/gui/dialogs.py b/invesalius/gui/dialogs.py
-index eb3e8150..46e14154 100644
---- a/invesalius/gui/dialogs.py
-+++ b/invesalius/gui/dialogs.py
-@@ -3480,7 +3480,7 @@ class ObjectCalibrationDialog(wx.Dialog):
-         mapper = vtk.vtkPolyDataMapper()
-         mapper.SetInputData(normals.GetOutput())
-         mapper.ScalarVisibilityOff()
--        mapper.ImmediateModeRenderingOn()
-+        #  mapper.ImmediateModeRenderingOn()
- 
-         obj_actor = vtk.vtkActor()
-         obj_actor.SetMapper(mapper)
