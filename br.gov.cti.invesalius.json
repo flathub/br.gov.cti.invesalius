@@ -195,6 +195,10 @@
             {
                 "type": "patch",
                 "path": "comment_immediate_rendering.patch"
+            },
+            {
+                "type": "patch",
+                "path": "not_create_tempdir.patch"
             }
         ]
     },
