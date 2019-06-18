@@ -46,6 +46,11 @@
     <url type="bugtracker">https://github.com/invesalius/invesalius3/issues</url>
     <url type="translate">https://www.transifex.com/invesalius/invesalius3/</url>
     <releases>
+        <release version="3.1.99994" type="development" date="2019-06-11" urgency="high">
+            <description>
+                <p>Bug fixes</p>
+            </description>
+        </release>
         <release version="3.1.99993" type="development" date="2019-05-17" urgency="high">
             <description>
                 <p>Density tools.</p>
