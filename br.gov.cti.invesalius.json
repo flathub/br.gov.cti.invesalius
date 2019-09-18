@@ -1,7 +1,7 @@
 {
     "app-id": "br.gov.cti.invesalius",
     "runtime": "org.gnome.Platform",
-    "runtime-version": "3.32",
+    "runtime-version": "3.34",
     "sdk": "org.gnome.Sdk",
     "command": "runner.sh",
     "copy-icon": true,
@@ -24,7 +24,11 @@
         "/lib/cmake",
         "/share/cmake",
         "/share/doc",
-        "/share/hdf5_examples"
+        "/share/hdf5_examples",
+        "/bin/g*",
+        "/bin/h*",
+        "/bin/s*",
+        "/bin/w*"
     ],
     "modules": [{
         "name": "vtk",
@@ -60,8 +64,8 @@
         "name": "swig",
         "sources":[{
             "type": "archive",
-            "url": "http://prdownloads.sourceforge.net/swig/swig-3.0.12.tar.gz",
-            "sha256": "7cf9f447ae7ed1c51722efc45e7f14418d15d7a1e143ac9f09a668999f4fc94d"
+            "url": "https://github.com/swig/swig/archive/rel-3.0.12.tar.gz",
+            "sha256": "64971de92b8a1da0b9ffb4b51e9214bb936c4dbbc304367899cdb07280b94af6"
         }],
         "config-opts": [
             "--without-pcre",
@@ -126,6 +130,17 @@
     "python3-Pillow.json",
     "python3-cython.json",
     "python3-pathlib2.json",
+    {
+        "name": "SDL2",
+        "config-opts": ["--disable-static"],
+        "sources": [
+            {
+                "type": "archive",
+                "url": "https://www.libsdl.org/release/SDL2-2.0.10.tar.gz",
+                "sha256": "b4656c13a1f0d0023ae2f4a9cf08ec92fffb464e0f24238337784159b8b91d57"
+            }
+        ]
+    },
     "python3-wxpython.json",
     "python3-setuptools_scm.json",
     "python3-wheel.json",
