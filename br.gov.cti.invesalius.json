@@ -124,7 +124,7 @@
             }
         ]
     },
-    "shared-modules/glu/glu-9.0.0.json",
+    "shared-modules/glu/glu-9.json",
     "python3-numpy.json",
     "python3-scipy.json",
     "python3-Pillow.json",
