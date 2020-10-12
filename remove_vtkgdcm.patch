@@ -1,0 +1,1077 @@
+From abed627655c64dceeb3be597bbe449eea99c78e0 Mon Sep 17 00:00:00 2001
+From: Thiago Franco de Moraes <totonixsame@gmail.com>
+Date: Mon, 13 May 2019 16:45:23 -0300
+Subject: [PATCH 1/9] generating thumbs only using gdcm + numpy
+
+---
+ invesalius/data/converters.py      | 31 ++++++++++++++++-
+ invesalius/data/imagedata_utils.py | 54 ++++++++++++++++--------------
+ 2 files changed, 58 insertions(+), 27 deletions(-)
+
+diff --git a/invesalius/data/converters.py b/invesalius/data/converters.py
+index 3206ff99..f1b131ba 100644
+--- a/invesalius/data/converters.py
++++ b/invesalius/data/converters.py
+@@ -17,10 +17,13 @@
+ #    detalhes.
+ #--------------------------------------------------------------------------
+ 
+-import numpy
++import gdcm
++import numpy as np
+ import vtk
++
+ from vtk.util import numpy_support
+ 
++
+ def to_vtk(n_array, spacing, slice_number, orientation, origin=(0, 0, 0), padding=(0, 0, 0)):
+ 
+     if orientation == "SAGITTAL":
+@@ -84,3 +87,29 @@ def np_rgba_to_vtk(n_array, spacing=(1.0, 1.0, 1.0)):
+     image.GetPointData().SetScalars(v_image)
+ 
+     return image
++
++
++# Based on http://gdcm.sourceforge.net/html/ConvertNumpy_8py-example.html
++def gdcm_to_numpy(image):
++    map_gdcm_np = {gdcm.PixelFormat.UINT8  :np.int8,
++                   gdcm.PixelFormat.INT8   :np.uint8,
++                   #gdcm.PixelFormat.UINT12 :np.uint12,
++                   #gdcm.PixelFormat.INT12  :np.int12,
++                   gdcm.PixelFormat.UINT16 :np.uint16,
++                   gdcm.PixelFormat.INT16  :np.int16,
++                   gdcm.PixelFormat.UINT32 :np.uint32,
++                   gdcm.PixelFormat.INT32  :np.int32,
++                   #gdcm.PixelFormat.FLOAT16:np.float16,
++                   gdcm.PixelFormat.FLOAT32:np.float32,
++                   gdcm.PixelFormat.FLOAT64:np.float64 }
++
++    pf = image.GetPixelFormat()
++    if image.GetNumberOfDimensions() == 3:
++        shape = image.GetDimension(2), image.GetDimension(1), image.GetDimension(0), pf.GetSamplesPerPixel()
++    else:
++        shape = image.GetDimension(1), image.GetDimension(0), pf.GetSamplesPerPixel()
++    dtype = map_gdcm_np[pf.GetScalarType()]
++    gdcm_array = image.GetBuffer()
++    np_array = np.frombuffer(gdcm_array.encode('utf-8', errors="surrogateescape"), dtype=dtype)
++    np_array.shape = shape
++    return np_array.squeeze()
+diff --git a/invesalius/data/imagedata_utils.py b/invesalius/data/imagedata_utils.py
+index 75fa77c9..27f68565 100644
+--- a/invesalius/data/imagedata_utils.py
++++ b/invesalius/data/imagedata_utils.py
+@@ -23,6 +23,7 @@
+ import tempfile
+ 
+ import gdcm
++import imageio
+ import numpy
+ import vtk
+ import vtkgdcm
+@@ -266,19 +267,21 @@ def ExtractVOI(imagedata,xi,xf,yi,yf,zi,zf):
+ 
+ 
+ def create_dicom_thumbnails(filename, window=None, level=None):
+-    rvtk = vtkgdcm.vtkGDCMImageReader()
+-    rvtk.SetFileName(utils.encode(filename, const.FS_ENCODE))
+-    rvtk.Update()
++    print("filename", filename, type(filename))
++    rvtk = gdcm.ImageReader()
++    rvtk.SetFileName(filename)
++    rvtk.Read()
++
++    img = rvtk.GetImage()
+ 
+-    img = rvtk.GetOutput()
+     if window is None or level is None:
+         _min, _max = img.GetScalarRange()
+         window = _max - _min
+         level = _min + window / 2
+ 
+-    dx, dy, dz = img.GetDimensions()
++    #  dx, dy, dz = img.GetDimensions()
+ 
+-    if dz > 1:
++    if img.GetNumberOfDimensions() == 3:
+         thumbnail_paths = []
+         for i in range(dz):
+             img_slice = ExtractVOI(img, 0, dx-1, 0, dy-1, i, i+1)
+@@ -308,26 +311,25 @@ def create_dicom_thumbnails(filename, window=None, level=None):
+ 
+         return thumbnail_paths
+     else:
+-        colorer = vtk.vtkImageMapToWindowLevelColors()
+-        colorer.SetInputData(img)
+-        colorer.SetWindow(window)
+-        colorer.SetLevel(level)
+-        colorer.SetOutputFormatToRGB()
+-        colorer.Update()
+-
+-        resample = vtk.vtkImageResample()
+-        resample.SetInputData(colorer.GetOutput())
+-        resample.SetAxisMagnificationFactor ( 0, 0.25 )
+-        resample.SetAxisMagnificationFactor ( 1, 0.25 )
+-        resample.SetAxisMagnificationFactor ( 2, 1 )
+-        resample.Update()
+-
+-        thumbnail_path = tempfile.mktemp()
+-
+-        write_png = vtk.vtkPNGWriter()
+-        write_png.SetInputData(resample.GetOutput())
+-        write_png.SetFileName(thumbnail_path)
+-        write_png.Write()
++        np_image = converters.gdcm_to_numpy(img)
++        thumb_image = zoom(np_image, 0.25)
++
++        #  colorer = vtk.vtkImageMapToWindowLevelColors()
++        #  colorer.SetInputData(img)
++        #  colorer.SetWindow(window)
++        #  colorer.SetLevel(level)
++        #  colorer.SetOutputFormatToRGB()
++        #  colorer.Update()
++
++        #  resample = vtk.vtkImageResample()
++        #  resample.SetInputData(colorer.GetOutput())
++        #  resample.SetAxisMagnificationFactor ( 0, 0.25 )
++        #  resample.SetAxisMagnificationFactor ( 1, 0.25 )
++        #  resample.SetAxisMagnificationFactor ( 2, 1 )
++        #  resample.Update()
++
++        thumbnail_path = tempfile.mktemp(prefix='thumb_', suffix='.png')
++        imageio.imsave(thumbnail_path, thumb_image)
+ 
+         return thumbnail_path
+ 
+
+From def4fc320d54acb320eb648bf3461f86ca056fc7 Mon Sep 17 00:00:00 2001
+From: Thiago Franco de Moraes <totonixsame@gmail.com>
+Date: Mon, 20 May 2019 11:33:41 -0300
+Subject: [PATCH 2/9] applying intercept slop
+
+---
+ invesalius/data/imagedata_utils.py | 34 +++++++++++++++++++++++++++++-
+ 1 file changed, 33 insertions(+), 1 deletion(-)
+
+diff --git a/invesalius/data/imagedata_utils.py b/invesalius/data/imagedata_utils.py
+index 27f68565..bff9cbc9 100644
+--- a/invesalius/data/imagedata_utils.py
++++ b/invesalius/data/imagedata_utils.py
+@@ -25,6 +25,7 @@
+ import gdcm
+ import imageio
+ import numpy
++import numpy as np
+ import vtk
+ import vtkgdcm
+ from wx.lib.pubsub import pub as Publisher
+@@ -141,6 +142,24 @@ def read_dcm_slice_as_np(filename, resolution_percentage=1.0):
+     return im_array
+ 
+ 
++def read_dcm_slice_as_np2(filename, resolution_percentage=1.0):
++    reader = gdcm.ImageReader()
++    reader.SetFileName(filename)
++    reader.Read()
++
++    image = reader.GetImage()
++    pixel_format = image.GetPixelFormat()
++    shift = image.GetIntercept()
++    scale = image.GetSlope()
++
++    np_image = converters.gdcm_to_numpy(image)
++    output = np.empty_like(np_image, np.int16)
++    output[:] = scale * np_image + shift
++    if resolution_percentage < 1.0:
++        return zoom(output, resolution_percentage)
++    return output
++
++
+ def FixGantryTilt(matrix, spacing, tilt):
+     """
+     Fix gantry tilt given a vtkImageData and the tilt value. Return new
+@@ -311,8 +330,10 @@ def create_dicom_thumbnails(filename, window=None, level=None):
+ 
+         return thumbnail_paths
+     else:
+-        np_image = converters.gdcm_to_numpy(img)
++        np_image = read_dcm_slice_as_np2(filename)
+         thumb_image = zoom(np_image, 0.25)
++        thumb_image = np.array(get_LUT_value_255(thumb_image, window, level), dtype=np.uint8)
++        print(thumb_image.min(), thumb_image.max(), thumb_image.dtype)
+ 
+         #  colorer = vtk.vtkImageMapToWindowLevelColors()
+         #  colorer.SetInputData(img)
+@@ -755,3 +776,14 @@ def imgnormalize(data, srange=(0, 255)):
+     datan = datan.astype(numpy.int16)
+ 
+     return datan
++
++
++def get_LUT_value_255(data, window, level):
++    shape = data.shape
++    data_ = data.ravel()
++    data = np.piecewise(data_,
++                        [data_ <= (level - 0.5 - (window-1)/2),
++                         data_ > (level - 0.5 + (window-1)/2)],
++                        [0, 255, lambda data_: ((data_ - (level - 0.5))/(window-1) + 0.5)*(255)])
++    data.shape = shape
++    return data
+
+From 5a1a4a737cadbb007ae9615423387cd80766e101 Mon Sep 17 00:00:00 2001
+From: Thiago Franco de Moraes <totonixsame@gmail.com>
+Date: Fri, 24 May 2019 10:59:57 -0300
+Subject: [PATCH 3/9] generating thumbnails and slices without vtkgdcmreader
+
+---
+ invesalius/data/imagedata_utils.py | 282 ++---------------------------
+ 1 file changed, 17 insertions(+), 265 deletions(-)
+
+diff --git a/invesalius/data/imagedata_utils.py b/invesalius/data/imagedata_utils.py
+index bff9cbc9..e889bce0 100644
+--- a/invesalius/data/imagedata_utils.py
++++ b/invesalius/data/imagedata_utils.py
+@@ -27,7 +27,7 @@
+ import numpy
+ import numpy as np
+ import vtk
+-import vtkgdcm
++#  import vtkgdcm
+ from wx.lib.pubsub import pub as Publisher
+ 
+ from scipy.ndimage import shift, zoom
+@@ -156,7 +156,7 @@ def read_dcm_slice_as_np2(filename, resolution_percentage=1.0):
+     output = np.empty_like(np_image, np.int16)
+     output[:] = scale * np_image + shift
+     if resolution_percentage < 1.0:
+-        return zoom(output, resolution_percentage)
++        output = zoom(output, resolution_percentage)
+     return output
+ 
+ 
+@@ -287,269 +287,30 @@ def ExtractVOI(imagedata,xi,xf,yi,yf,zi,zf):
+ 
+ def create_dicom_thumbnails(filename, window=None, level=None):
+     print("filename", filename, type(filename))
+-    rvtk = gdcm.ImageReader()
+-    rvtk.SetFileName(filename)
+-    rvtk.Read()
+-
+-    img = rvtk.GetImage()
++    np_image = read_dcm_slice_as_np2(filename)
+ 
+     if window is None or level is None:
+-        _min, _max = img.GetScalarRange()
++        _min, _max = np_image.min(), np_image.max()
+         window = _max - _min
+         level = _min + window / 2
+ 
+-    #  dx, dy, dz = img.GetDimensions()
+-
+-    if img.GetNumberOfDimensions() == 3:
++    if len(np_image.shape) >= 3:
+         thumbnail_paths = []
+-        for i in range(dz):
+-            img_slice = ExtractVOI(img, 0, dx-1, 0, dy-1, i, i+1)
+-
+-            colorer = vtk.vtkImageMapToWindowLevelColors()
+-            colorer.SetInputData(img_slice)
+-            colorer.SetWindow(window)
+-            colorer.SetLevel(level)
+-            colorer.SetOutputFormatToRGB()
+-            colorer.Update()
+-
+-            resample = vtk.vtkImageResample()
+-            resample.SetInputData(colorer.GetOutput())
+-            resample.SetAxisMagnificationFactor ( 0, 0.25 )
+-            resample.SetAxisMagnificationFactor ( 1, 0.25 )
+-            resample.SetAxisMagnificationFactor ( 2, 1 )
+-            resample.Update()
+-
+-            thumbnail_path = tempfile.mktemp()
+-
+-            write_png = vtk.vtkPNGWriter()
+-            write_png.SetInputData(resample.GetOutput())
+-            write_png.SetFileName(thumbnail_path)
+-            write_png.Write()
+-
++        for i in range(np_image.shape[0]):
++            thumb_image = zoom(np_image, 0.25)
++            thumb_image = np.array(get_LUT_value_255(thumb_image, window, level), dtype=np.uint8)
++            thumbnail_path = tempfile.mktemp(prefix='thumb_', suffix='.png')
++            imageio.imsave(thumbnail_path, thumb_image)
+             thumbnail_paths.append(thumbnail_path)
+-
+         return thumbnail_paths
+     else:
+-        np_image = read_dcm_slice_as_np2(filename)
+         thumb_image = zoom(np_image, 0.25)
+         thumb_image = np.array(get_LUT_value_255(thumb_image, window, level), dtype=np.uint8)
+-        print(thumb_image.min(), thumb_image.max(), thumb_image.dtype)
+-
+-        #  colorer = vtk.vtkImageMapToWindowLevelColors()
+-        #  colorer.SetInputData(img)
+-        #  colorer.SetWindow(window)
+-        #  colorer.SetLevel(level)
+-        #  colorer.SetOutputFormatToRGB()
+-        #  colorer.Update()
+-
+-        #  resample = vtk.vtkImageResample()
+-        #  resample.SetInputData(colorer.GetOutput())
+-        #  resample.SetAxisMagnificationFactor ( 0, 0.25 )
+-        #  resample.SetAxisMagnificationFactor ( 1, 0.25 )
+-        #  resample.SetAxisMagnificationFactor ( 2, 1 )
+-        #  resample.Update()
+-
+         thumbnail_path = tempfile.mktemp(prefix='thumb_', suffix='.png')
+         imageio.imsave(thumbnail_path, thumb_image)
+-
+         return thumbnail_path
+ 
+ 
+-def CreateImageData(filelist, zspacing, xyspacing,size,
+-                                bits, use_dcmspacing):
+-    message = _("Generating multiplanar visualization...")
+-
+-    if not const.VTK_WARNING:
+-        log_path = os.path.join(inv_paths.USER_LOG_DIR, 'vtkoutput.txt')
+-        fow = vtk.vtkFileOutputWindow()
+-        fow.SetFileName(log_path)
+-        ow = vtk.vtkOutputWindow()
+-        ow.SetInstance(fow)
+-
+-    x,y = size
+-    px, py = utils.predict_memory(len(filelist), x, y, bits)
+-
+-    utils.debug("Image Resized to >>> %f x %f" % (px, py))
+-
+-    if (x == px) and (y == py):
+-        const.REDUCE_IMAGEDATA_QUALITY = 0
+-    else:
+-        const.REDUCE_IMAGEDATA_QUALITY = 1
+-
+-    if not(const.REDUCE_IMAGEDATA_QUALITY):
+-        update_progress= vtk_utils.ShowProgress(1, dialog_type = "ProgressDialog")
+-
+-        array = vtk.vtkStringArray()
+-        for x in range(len(filelist)):
+-            array.InsertValue(x,filelist[x])
+-
+-        reader = vtkgdcm.vtkGDCMImageReader()
+-        reader.SetFileNames(array)
+-        reader.AddObserver("ProgressEvent", lambda obj,evt:
+-                     update_progress(reader,message))
+-        reader.Update()
+-
+-        # The zpacing is a DicomGroup property, so we need to set it
+-        imagedata = vtk.vtkImageData()
+-        imagedata.DeepCopy(reader.GetOutput())
+-        if (use_dcmspacing):
+-            spacing = xyspacing
+-            spacing[2] = zspacing
+-        else:
+-            spacing = imagedata.GetSpacing()
+-
+-        imagedata.SetSpacing(spacing[0], spacing[1], zspacing)
+-    else:
+-
+-        update_progress= vtk_utils.ShowProgress(2*len(filelist),
+-                                            dialog_type = "ProgressDialog")
+-
+-        # Reformat each slice and future append them
+-        appender = vtk.vtkImageAppend()
+-        appender.SetAppendAxis(2) #Define Stack in Z
+-
+-
+-        # Reformat each slice
+-        for x in range(len(filelist)):
+-            # TODO: We need to check this automatically according
+-            # to each computer's architecture
+-            # If the resolution of the matrix is too large
+-            reader = vtkgdcm.vtkGDCMImageReader()
+-            reader.SetFileName(filelist[x])
+-            reader.AddObserver("ProgressEvent", lambda obj,evt:
+-                         update_progress(reader,message))
+-            reader.Update()
+-
+-            if (use_dcmspacing):
+-                spacing = xyspacing
+-                spacing[2] = zspacing
+-            else:
+-                spacing = reader.GetOutput().GetSpacing()
+-
+-            tmp_image = vtk.vtkImageData()
+-            tmp_image.DeepCopy(reader.GetOutput())
+-            tmp_image.SetSpacing(spacing[0], spacing[1], zspacing)
+-            tmp_image.Update()
+-
+-            #Resample image in x,y dimension
+-            slice_imagedata = ResampleImage2D(tmp_image, px, py, update_progress)
+-            #Stack images in Z axes
+-            appender.AddInput(slice_imagedata)
+-            #appender.AddObserver("ProgressEvent", lambda obj,evt:update_progress(appender))
+-            appender.Update()
+-
+-        spacing = appender.GetOutput().GetSpacing()
+-
+-        # The zpacing is a DicomGroup property, so we need to set it
+-        imagedata = vtk.vtkImageData()
+-        imagedata.DeepCopy(appender.GetOutput())
+-        imagedata.SetSpacing(spacing[0], spacing[1], zspacing)
+-
+-    imagedata.AddObserver("ProgressEvent", lambda obj,evt:
+-                 update_progress(imagedata,message))
+-    imagedata.Update()
+-
+-    return imagedata
+-
+-
+-class ImageCreator:
+-    def __init__(self):
+-        self.running = True
+-        Publisher.subscribe(self.CancelImageDataLoad, "Cancel DICOM load")
+-
+-    def CancelImageDataLoad(self, evt_pusub):
+-        utils.debug("Canceling")
+-        self.running = False
+-
+-    def CreateImageData(self, filelist, zspacing, size, bits):
+-        message = _("Generating multiplanar visualization...")
+-
+-        if not const.VTK_WARNING:
+-            log_path = os.path.join(inv_paths.USER_LOG_DIR, 'vtkoutput.txt')
+-            fow = vtk.vtkFileOutputWindow()
+-            fow.SetFileName(log_path)
+-            ow = vtk.vtkOutputWindow()
+-            ow.SetInstance(fow)
+-
+-        x,y = size
+-        px, py = utils.predict_memory(len(filelist), x, y, bits)
+-        utils.debug("Image Resized to >>> %f x %f" % (px, py))
+-
+-        if (x == px) and (y == py):
+-            const.REDUCE_IMAGEDATA_QUALITY = 0
+-        else:
+-            const.REDUCE_IMAGEDATA_QUALITY = 1
+-
+-        if not(const.REDUCE_IMAGEDATA_QUALITY):
+-            update_progress= vtk_utils.ShowProgress(1, dialog_type = "ProgressDialog")
+-
+-            array = vtk.vtkStringArray()
+-            for x in range(len(filelist)):
+-                if not self.running:
+-                    return False
+-                array.InsertValue(x,filelist[x])
+-
+-            if not self.running:
+-                return False
+-            reader = vtkgdcm.vtkGDCMImageReader()
+-            reader.SetFileNames(array)
+-            reader.AddObserver("ProgressEvent", lambda obj,evt:
+-                         update_progress(reader,message))
+-            reader.Update()
+-
+-            if not self.running:
+-                reader.AbortExecuteOn()
+-                return False
+-            # The zpacing is a DicomGroup property, so we need to set it
+-            imagedata = vtk.vtkImageData()
+-            imagedata.DeepCopy(reader.GetOutput())
+-            spacing = imagedata.GetSpacing()
+-            imagedata.SetSpacing(spacing[0], spacing[1], zspacing)
+-        else:
+-
+-            update_progress= vtk_utils.ShowProgress(2*len(filelist),
+-                                                dialog_type = "ProgressDialog")
+-
+-            # Reformat each slice and future append them
+-            appender = vtk.vtkImageAppend()
+-            appender.SetAppendAxis(2) #Define Stack in Z
+-
+-
+-            # Reformat each slice
+-            for x in range(len(filelist)):
+-                # TODO: We need to check this automatically according
+-                # to each computer's architecture
+-                # If the resolution of the matrix is too large
+-                if not self.running:
+-                    return False
+-                reader = vtkgdcm.vtkGDCMImageReader()
+-                reader.SetFileName(filelist[x])
+-                reader.AddObserver("ProgressEvent", lambda obj,evt:
+-                             update_progress(reader,message))
+-                reader.Update()
+-
+-                #Resample image in x,y dimension
+-                slice_imagedata = ResampleImage2D(reader.GetOutput(), px, py, update_progress)
+-                #Stack images in Z axes
+-                appender.AddInput(slice_imagedata)
+-                #appender.AddObserver("ProgressEvent", lambda obj,evt:update_progress(appender))
+-                appender.Update()
+-
+-            # The zpacing is a DicomGroup property, so we need to set it
+-            if not self.running:
+-                return False
+-            imagedata = vtk.vtkImageData()
+-            imagedata.DeepCopy(appender.GetOutput())
+-            spacing = imagedata.GetSpacing()
+-
+-            imagedata.SetSpacing(spacing[0], spacing[1], zspacing)
+-
+-        imagedata.AddObserver("ProgressEvent", lambda obj,evt:
+-                     update_progress(imagedata,message))
+-        imagedata.Update()
+-
+-        return imagedata
+-
+ def bitmap2memmap(files, slice_size, orientation, spacing, resolution_percentage):
+     """
+     From a list of dicom files it creates memmap file in the temp folder and
+@@ -649,7 +410,6 @@ def bitmap2memmap(files, slice_size, orientation, spacing, resolution_percentage
+     return matrix, scalar_range, temp_file
+ 
+ 
+-
+ def dcm2memmap(files, slice_size, orientation, resolution_percentage):
+     """
+     From a list of dicom files it creates memmap file in the temp folder and
+@@ -658,7 +418,7 @@ def dcm2memmap(files, slice_size, orientation, resolution_percentage):
+     message = _("Generating multiplanar visualization...")
+     update_progress= vtk_utils.ShowProgress(len(files) - 1, dialog_type = "ProgressDialog")
+ 
+-    first_slice = read_dcm_slice_as_np(files[0], resolution_percentage)
++    first_slice = read_dcm_slice_as_np2(files[0], resolution_percentage)
+     slice_size = first_slice.shape[::-1]
+ 
+     temp_file = tempfile.mktemp()
+@@ -672,7 +432,7 @@ def dcm2memmap(files, slice_size, orientation, resolution_percentage):
+ 
+     matrix = numpy.memmap(temp_file, mode='w+', dtype='int16', shape=shape)
+     for n, f in enumerate(files):
+-        im_array = read_dcm_slice_as_np(f, resolution_percentage)
++        im_array = read_dcm_slice_as_np2(f, resolution_percentage)[::-1]
+ 
+         if orientation == 'CORONAL':
+             matrix[:, shape[1] - n - 1, :] = im_array
+@@ -692,30 +452,22 @@ def dcm2memmap(files, slice_size, orientation, resolution_percentage):
+ 
+ 
+ def dcmmf2memmap(dcm_file, orientation):
+-    r = vtkgdcm.vtkGDCMImageReader()
+-    r.SetFileName(dcm_file)
+-    r.Update()
++    d = read_dcm_slice_as_np2(dcm_file)
+ 
+     temp_file = tempfile.mktemp()
++    matrix = numpy.memmap(temp_file, mode='w+', dtype='int16', shape=d.shape)
+ 
+-    o = r.GetOutput()
+-    x, y, z = o.GetDimensions()
+-    spacing = o.GetSpacing()
+-
+-    matrix = numpy.memmap(temp_file, mode='w+', dtype='int16', shape=(z, y, x))
+-
+-    d = numpy_support.vtk_to_numpy(o.GetPointData().GetScalars())
+     d.shape = z, y, x
+     if orientation == 'CORONAL':
+         matrix.shape = y, z, x
+         for n in range(z):
+-            matrix[:, n, :] = d[n]
++            matrix[:, n, :] = d[n][::-1]
+     elif orientation == 'SAGITTAL':
+         matrix.shape = x, z, y
+         for n in range(z):
+-            matrix[:, :, n] = d[n]
++            matrix[:, :, n] = d[n][::-1]
+     else:
+-        matrix[:] = d
++        matrix[:] = d[:, ::-1, :]
+ 
+     matrix.flush()
+     scalar_range = matrix.min(), matrix.max()
+
+From a26ec08a58e04ada1e03c1d3a197583f1eb93d51 Mon Sep 17 00:00:00 2001
+From: Thiago Franco de Moraes <totonixsame@gmail.com>
+Date: Fri, 24 May 2019 15:48:38 -0300
+Subject: [PATCH 4/9] Using numpy and gdcm in dicom_preview_panel
+
+---
+ invesalius/gui/dicom_preview_panel.py | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/invesalius/gui/dicom_preview_panel.py b/invesalius/gui/dicom_preview_panel.py
+index 8d66d67b..ce7736c1 100644
+--- a/invesalius/gui/dicom_preview_panel.py
++++ b/invesalius/gui/dicom_preview_panel.py
+@@ -35,7 +35,8 @@
+ import invesalius.reader.dicom_reader as dicom_reader
+ import invesalius.data.vtk_utils as vtku
+ import invesalius.utils as utils
+-import vtkgdcm
++from invesalius.data import imagedata_utils
++from invesalius.data import converters
+ 
+ if sys.platform == 'win32':
+     try:
+@@ -890,20 +891,19 @@ def ShowSlice(self, index = 0):
+             reader.Update()
+ 
+             image = reader.GetOutput()
+-
+         else:
+-            rdicom = vtkgdcm.vtkGDCMImageReader()
++            filename = dicom.image.file
+             if _has_win32api:
+-                rdicom.SetFileName(win32api.GetShortPathName(dicom.image.file).encode(const.FS_ENCODE))
+-            else:
+-                rdicom.SetFileName(dicom.image.file)
+-            rdicom.Update()
++                filename = win32api.GetShortPathName(filename).encode(const.FS_ENCODE)
++
++            np_image = imagedata_utils.read_dcm_slice_as_np2(filename)
++            vtk_image = converters.to_vtk(np_image, dicom.image.spacing, 0, 'AXIAL')
+ 
+             # ADJUST CONTRAST
+             window_level = dicom.image.level
+             window_width = dicom.image.window
+             colorer = vtk.vtkImageMapToWindowLevelColors()
+-            colorer.SetInputConnection(rdicom.GetOutputPort())
++            colorer.SetInputData(vtk_image)
+             colorer.SetWindow(float(window_width))
+             colorer.SetLevel(float(window_level))
+             colorer.Update()
+
+From 1409982247a5f7eaff3690640c22efa144cbc80a Mon Sep 17 00:00:00 2001
+From: Thiago Franco de Moraes <totonixsame@gmail.com>
+Date: Mon, 27 May 2019 16:30:10 -0300
+Subject: [PATCH 5/9] loading multiframe dicom
+
+---
+ invesalius/control.py              |  9 +++++++--
+ invesalius/data/imagedata_utils.py | 10 ++++------
+ 2 files changed, 11 insertions(+), 8 deletions(-)
+
+diff --git a/invesalius/control.py b/invesalius/control.py
+index f437fa2a..b9bf3f57 100644
+--- a/invesalius/control.py
++++ b/invesalius/control.py
+@@ -824,7 +824,6 @@ def OpenDicomGroup(self, dicom_group, interval, file_range, gui=True):
+             self.matrix, scalar_range, self.filename = image_utils.dcm2memmap(filelist, size,
+                                                                         orientation, resolution_percentage)
+ 
+-            print(xyspacing, zspacing)
+             if orientation == 'AXIAL':
+                 spacing = xyspacing[0], xyspacing[1], zspacing
+             elif orientation == 'CORONAL':
+@@ -832,7 +831,13 @@ def OpenDicomGroup(self, dicom_group, interval, file_range, gui=True):
+             elif orientation == 'SAGITTAL':
+                 spacing = zspacing, xyspacing[1], xyspacing[0]
+         else:
+-            self.matrix, spacing, scalar_range, self.filename = image_utils.dcmmf2memmap(filelist[0], orientation)
++            self.matrix, scalar_range, self.filename = image_utils.dcmmf2memmap(filelist[0], orientation)
++            if orientation == 'AXIAL':
++                spacing = xyspacing[0], xyspacing[1], zspacing
++            elif orientation == 'CORONAL':
++                spacing = xyspacing[0], zspacing, xyspacing[1]
++            elif orientation == 'SAGITTAL':
++                spacing = zspacing, xyspacing[1], xyspacing[0]
+ 
+         self.Slice = sl.Slice()
+         self.Slice.matrix = self.matrix
+diff --git a/invesalius/data/imagedata_utils.py b/invesalius/data/imagedata_utils.py
+index e889bce0..e10b2d34 100644
+--- a/invesalius/data/imagedata_utils.py
++++ b/invesalius/data/imagedata_utils.py
+@@ -297,7 +297,7 @@ def create_dicom_thumbnails(filename, window=None, level=None):
+     if len(np_image.shape) >= 3:
+         thumbnail_paths = []
+         for i in range(np_image.shape[0]):
+-            thumb_image = zoom(np_image, 0.25)
++            thumb_image = zoom(np_image[i], 0.25)
+             thumb_image = np.array(get_LUT_value_255(thumb_image, window, level), dtype=np.uint8)
+             thumbnail_path = tempfile.mktemp(prefix='thumb_', suffix='.png')
+             imageio.imsave(thumbnail_path, thumb_image)
+@@ -453,11 +453,9 @@ def dcm2memmap(files, slice_size, orientation, resolution_percentage):
+ 
+ def dcmmf2memmap(dcm_file, orientation):
+     d = read_dcm_slice_as_np2(dcm_file)
+-
+     temp_file = tempfile.mktemp()
+     matrix = numpy.memmap(temp_file, mode='w+', dtype='int16', shape=d.shape)
+-
+-    d.shape = z, y, x
++    z, y, x = d.shape
+     if orientation == 'CORONAL':
+         matrix.shape = y, z, x
+         for n in range(z):
+@@ -472,9 +470,9 @@ def dcmmf2memmap(dcm_file, orientation):
+     matrix.flush()
+     scalar_range = matrix.min(), matrix.max()
+ 
+-    print("ORIENTATION", orientation)
++    print("ORIENTATION", orientation, matrix.shape, matrix.min(), matrix.max(), d.min(), d.max())
+ 
+-    return matrix, spacing, scalar_range, temp_file
++    return matrix, scalar_range, temp_file
+ 
+ 
+ def img2memmap(group):
+
+From a01f1bc3c9bc0c94d87616a910657958c609f9f6 Mon Sep 17 00:00:00 2001
+From: Thiago Franco de Moraes <totonixsame@gmail.com>
+Date: Tue, 28 May 2019 16:55:14 -0300
+Subject: [PATCH 6/9] working with rgb dicoms
+
+---
+ invesalius/data/converters.py         | 37 +++++++++++++++++----------
+ invesalius/data/imagedata_utils.py    | 16 +++++++-----
+ invesalius/gui/dicom_preview_panel.py |  1 +
+ invesalius/reader/dicom_reader.py     |  7 ++---
+ 4 files changed, 36 insertions(+), 25 deletions(-)
+
+diff --git a/invesalius/data/converters.py b/invesalius/data/converters.py
+index f1b131ba..418b4f24 100644
+--- a/invesalius/data/converters.py
++++ b/invesalius/data/converters.py
+@@ -90,18 +90,20 @@ def np_rgba_to_vtk(n_array, spacing=(1.0, 1.0, 1.0)):
+ 
+ 
+ # Based on http://gdcm.sourceforge.net/html/ConvertNumpy_8py-example.html
+-def gdcm_to_numpy(image):
+-    map_gdcm_np = {gdcm.PixelFormat.UINT8  :np.int8,
+-                   gdcm.PixelFormat.INT8   :np.uint8,
+-                   #gdcm.PixelFormat.UINT12 :np.uint12,
+-                   #gdcm.PixelFormat.INT12  :np.int12,
+-                   gdcm.PixelFormat.UINT16 :np.uint16,
+-                   gdcm.PixelFormat.INT16  :np.int16,
+-                   gdcm.PixelFormat.UINT32 :np.uint32,
+-                   gdcm.PixelFormat.INT32  :np.int32,
+-                   #gdcm.PixelFormat.FLOAT16:np.float16,
+-                   gdcm.PixelFormat.FLOAT32:np.float32,
+-                   gdcm.PixelFormat.FLOAT64:np.float64 }
++def gdcm_to_numpy(image, apply_intercep_scale=True):
++    map_gdcm_np = {
++        gdcm.PixelFormat.UINT8   :np.uint8,
++        gdcm.PixelFormat.INT8  :np.int8,
++        #gdcm.PixelFormat.UINT12 :np.uint12,
++        #gdcm.PixelFormat.INT12  :np.int12,
++        gdcm.PixelFormat.UINT16 :np.uint16,
++        gdcm.PixelFormat.INT16  :np.int16,
++        gdcm.PixelFormat.UINT32 :np.uint32,
++        gdcm.PixelFormat.INT32  :np.int32,
++        #gdcm.PixelFormat.FLOAT16:np.float16,
++        gdcm.PixelFormat.FLOAT32:np.float32,
++        gdcm.PixelFormat.FLOAT64:np.float64,
++    }
+ 
+     pf = image.GetPixelFormat()
+     if image.GetNumberOfDimensions() == 3:
+@@ -112,4 +114,13 @@ def gdcm_to_numpy(image):
+     gdcm_array = image.GetBuffer()
+     np_array = np.frombuffer(gdcm_array.encode('utf-8', errors="surrogateescape"), dtype=dtype)
+     np_array.shape = shape
+-    return np_array.squeeze()
++    np_array = np_array.squeeze()
++
++    if apply_intercep_scale:
++        shift = image.GetIntercept()
++        scale = image.GetSlope()
++        output = np.empty_like(np_array, np.int16)
++        output[:] = scale * np_array + shift
++        return output
++    else:
++        return np_array
+diff --git a/invesalius/data/imagedata_utils.py b/invesalius/data/imagedata_utils.py
+index e10b2d34..61d717f1 100644
+--- a/invesalius/data/imagedata_utils.py
++++ b/invesalius/data/imagedata_utils.py
+@@ -285,16 +285,15 @@ def ExtractVOI(imagedata,xi,xf,yi,yf,zi,zf):
+     return voi.GetOutput()
+ 
+ 
+-def create_dicom_thumbnails(filename, window=None, level=None):
+-    print("filename", filename, type(filename))
+-    np_image = read_dcm_slice_as_np2(filename)
+-
++def create_dicom_thumbnails(image, window=None, level=None):
++    pf = image.GetPixelFormat()
++    np_image = converters.gdcm_to_numpy(image, pf.GetSamplesPerPixel() == 1)
+     if window is None or level is None:
+         _min, _max = np_image.min(), np_image.max()
+         window = _max - _min
+         level = _min + window / 2
+ 
+-    if len(np_image.shape) >= 3:
++    if image.GetNumberOfDimensions() >= 3:
+         thumbnail_paths = []
+         for i in range(np_image.shape[0]):
+             thumb_image = zoom(np_image[i], 0.25)
+@@ -304,9 +303,12 @@ def create_dicom_thumbnails(filename, window=None, level=None):
+             thumbnail_paths.append(thumbnail_path)
+         return thumbnail_paths
+     else:
+-        thumb_image = zoom(np_image, 0.25)
+-        thumb_image = np.array(get_LUT_value_255(thumb_image, window, level), dtype=np.uint8)
+         thumbnail_path = tempfile.mktemp(prefix='thumb_', suffix='.png')
++        if pf.GetSamplesPerPixel() == 1:
++            thumb_image = zoom(np_image, 0.25)
++            thumb_image = np.array(get_LUT_value_255(thumb_image, window, level), dtype=np.uint8)
++        else:
++            thumb_image = zoom(np_image, (0.25, 0.25, 1))
+         imageio.imsave(thumbnail_path, thumb_image)
+         return thumbnail_path
+ 
+diff --git a/invesalius/gui/dicom_preview_panel.py b/invesalius/gui/dicom_preview_panel.py
+index ce7736c1..ffb88063 100644
+--- a/invesalius/gui/dicom_preview_panel.py
++++ b/invesalius/gui/dicom_preview_panel.py
+@@ -897,6 +897,7 @@ def ShowSlice(self, index = 0):
+                 filename = win32api.GetShortPathName(filename).encode(const.FS_ENCODE)
+ 
+             np_image = imagedata_utils.read_dcm_slice_as_np2(filename)
++            print(">>> spacing", dicom.image.spacing)
+             vtk_image = converters.to_vtk(np_image, dicom.image.spacing, 0, 'AXIAL')
+ 
+             # ADJUST CONTRAST
+diff --git a/invesalius/reader/dicom_reader.py b/invesalius/reader/dicom_reader.py
+index 9208c694..a7e8f1c0 100644
+--- a/invesalius/reader/dicom_reader.py
++++ b/invesalius/reader/dicom_reader.py
+@@ -202,14 +202,11 @@ def run(self):
+                 level = None
+                 window = None
+ 
+-            if _has_win32api:
+-                thumbnail_path = imagedata_utils.create_dicom_thumbnails(win32api.GetShortPathName(self.filepath), window, level)
+-            else:
+-                thumbnail_path = imagedata_utils.create_dicom_thumbnails(self.filepath, window, level)
++            img = reader.GetImage()
++            thumbnail_path = imagedata_utils.create_dicom_thumbnails(img, window, level)
+ 
+             #------ Verify the orientation --------------------------------
+ 
+-            img = reader.GetImage()
+             direc_cosines = img.GetDirectionCosines()
+             orientation = gdcm.Orientation()
+             try:
+
+From 9a898ea0eeef4c0dd17939794b71947888639687 Mon Sep 17 00:00:00 2001
+From: Thiago Franco de Moraes <totonixsame@gmail.com>
+Date: Thu, 30 May 2019 14:17:14 -0300
+Subject: [PATCH 7/9] little improvements
+
+---
+ invesalius/data/imagedata_utils.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/invesalius/data/imagedata_utils.py b/invesalius/data/imagedata_utils.py
+index 61d717f1..a4e45a2e 100644
+--- a/invesalius/data/imagedata_utils.py
++++ b/invesalius/data/imagedata_utils.py
+@@ -152,7 +152,7 @@ def read_dcm_slice_as_np2(filename, resolution_percentage=1.0):
+     shift = image.GetIntercept()
+     scale = image.GetSlope()
+ 
+-    np_image = converters.gdcm_to_numpy(image)
++    np_image = converters.gdcm_to_numpy(image, False)
+     output = np.empty_like(np_image, np.int16)
+     output[:] = scale * np_image + shift
+     if resolution_percentage < 1.0:
+
+From 9f13d4b787a8f7a15b0796c2ef4ef4d48c9f0292 Mon Sep 17 00:00:00 2001
+From: Thiago Franco de Moraes <totonixsame@gmail.com>
+Date: Fri, 31 May 2019 14:31:01 -0300
+Subject: [PATCH 8/9] removed all vtkgdcm importing
+
+---
+ invesalius/data/imagedata_utils.py     | 37 +-------------------------
+ invesalius/gui/bitmap_preview_panel.py |  1 -
+ invesalius/reader/dicom.py             |  1 -
+ invesalius/reader/dicom_reader.py      |  1 -
+ 4 files changed, 1 insertion(+), 39 deletions(-)
+
+diff --git a/invesalius/data/imagedata_utils.py b/invesalius/data/imagedata_utils.py
+index a4e45a2e..2bf10acf 100644
+--- a/invesalius/data/imagedata_utils.py
++++ b/invesalius/data/imagedata_utils.py
+@@ -27,7 +27,6 @@
+ import numpy
+ import numpy as np
+ import vtk
+-#  import vtkgdcm
+ from wx.lib.pubsub import pub as Publisher
+ 
+ from scipy.ndimage import shift, zoom
+@@ -126,35 +125,12 @@ def resize_slice(im_array, resolution_percentage):
+     return out
+ 
+ 
+-def read_dcm_slice_as_np(filename, resolution_percentage=1.0):
+-    """
+-    read a dicom slice file and return the slice as numpy ndarray
+-    """
+-    dcm_reader = vtkgdcm.vtkGDCMImageReader()
+-    dcm_reader.SetFileName(filename)
+-    dcm_reader.Update()
+-    image = dcm_reader.GetOutput()
+-    if resolution_percentage < 1.0:
+-        image = ResampleImage2D(image, resolution_percentage=resolution_percentage)
+-    dx, dy, dz = image.GetDimensions()
+-    im_array = numpy_support.vtk_to_numpy(image.GetPointData().GetScalars())
+-    im_array.shape = dy, dx
+-    return im_array
+-
+-
+ def read_dcm_slice_as_np2(filename, resolution_percentage=1.0):
+     reader = gdcm.ImageReader()
+     reader.SetFileName(filename)
+     reader.Read()
+-
+     image = reader.GetImage()
+-    pixel_format = image.GetPixelFormat()
+-    shift = image.GetIntercept()
+-    scale = image.GetSlope()
+-
+-    np_image = converters.gdcm_to_numpy(image, False)
+-    output = np.empty_like(np_image, np.int16)
+-    output[:] = scale * np_image + shift
++    output = converters.gdcm_to_numpy(image)
+     if resolution_percentage < 1.0:
+         output = zoom(output, resolution_percentage)
+     return output
+@@ -260,17 +236,6 @@ def View(imagedata):
+     import time
+     time.sleep(10)
+ 
+-def ViewGDCM(imagedata):
+-    viewer = vtkgdcm.vtkImageColorViewer()
+-    viewer.SetInput(reader.GetOutput())
+-    viewer.SetColorWindow(500.)
+-    viewer.SetColorLevel(50.)
+-    viewer.Render()
+-
+-    import time
+-    time.sleep(5)
+-
+-
+ 
+ def ExtractVOI(imagedata,xi,xf,yi,yf,zi,zf):
+     """
+diff --git a/invesalius/gui/bitmap_preview_panel.py b/invesalius/gui/bitmap_preview_panel.py
+index 12b8968d..6564bb00 100644
+--- a/invesalius/gui/bitmap_preview_panel.py
++++ b/invesalius/gui/bitmap_preview_panel.py
+@@ -1,6 +1,5 @@
+ import wx
+ import vtk
+-import vtkgdcm
+ import time
+ import numpy
+ 
+diff --git a/invesalius/reader/dicom.py b/invesalius/reader/dicom.py
+index 41d570f8..72586e7d 100644
+--- a/invesalius/reader/dicom.py
++++ b/invesalius/reader/dicom.py
+@@ -19,7 +19,6 @@
+ #---------------------------------------------------------------------
+ import time
+ #import gdcm
+-#import vtkgdcm
+ import sys
+ import invesalius.utils as utils
+ import invesalius.constants as const
+diff --git a/invesalius/reader/dicom_reader.py b/invesalius/reader/dicom_reader.py
+index a7e8f1c0..d4ada61c 100644
+--- a/invesalius/reader/dicom_reader.py
++++ b/invesalius/reader/dicom_reader.py
+@@ -24,7 +24,6 @@
+ from multiprocessing import cpu_count
+ 
+ import vtk
+-import vtkgdcm
+ import gdcm
+ from wx.lib.pubsub import pub as Publisher
+ 
+
+From 29768fe671c4d157b4fb37fb326ceba7c121853d Mon Sep 17 00:00:00 2001
+From: Thiago Franco de Moraes <totonixsame@gmail.com>
+Date: Thu, 6 Jun 2019 10:19:30 -0300
+Subject: [PATCH 9/9] getting spacing from gdcmimagereader
+
+---
+ invesalius/control.py              | 11 ++++-------
+ invesalius/data/imagedata_utils.py | 28 ++++++++++++++++++----------
+ 2 files changed, 22 insertions(+), 17 deletions(-)
+
+diff --git a/invesalius/control.py b/invesalius/control.py
+index b9bf3f57..b4f33878 100644
+--- a/invesalius/control.py
++++ b/invesalius/control.py
+@@ -831,13 +831,10 @@ def OpenDicomGroup(self, dicom_group, interval, file_range, gui=True):
+             elif orientation == 'SAGITTAL':
+                 spacing = zspacing, xyspacing[1], xyspacing[0]
+         else:
+-            self.matrix, scalar_range, self.filename = image_utils.dcmmf2memmap(filelist[0], orientation)
+-            if orientation == 'AXIAL':
+-                spacing = xyspacing[0], xyspacing[1], zspacing
+-            elif orientation == 'CORONAL':
+-                spacing = xyspacing[0], zspacing, xyspacing[1]
+-            elif orientation == 'SAGITTAL':
+-                spacing = zspacing, xyspacing[1], xyspacing[0]
++            print(">>>>>> filelist", filelist)
++            self.matrix, scalar_range, spacing, self.filename = image_utils.dcmmf2memmap(filelist[0], orientation)
++
++        print(">>>>>> spacing", spacing)
+ 
+         self.Slice = sl.Slice()
+         self.Slice.matrix = self.matrix
+diff --git a/invesalius/data/imagedata_utils.py b/invesalius/data/imagedata_utils.py
+index 2bf10acf..42070ce5 100644
+--- a/invesalius/data/imagedata_utils.py
++++ b/invesalius/data/imagedata_utils.py
+@@ -419,27 +419,35 @@ def dcm2memmap(files, slice_size, orientation, resolution_percentage):
+ 
+ 
+ def dcmmf2memmap(dcm_file, orientation):
+-    d = read_dcm_slice_as_np2(dcm_file)
++    reader = gdcm.ImageReader()
++    reader.SetFileName(dcm_file)
++    reader.Read()
++    image = reader.GetImage()
++    xs, ys, zs = image.GetSpacing()
++    pf = image.GetPixelFormat()
++    np_image = converters.gdcm_to_numpy(image, pf.GetSamplesPerPixel() == 1)
+     temp_file = tempfile.mktemp()
+-    matrix = numpy.memmap(temp_file, mode='w+', dtype='int16', shape=d.shape)
+-    z, y, x = d.shape
++    matrix = numpy.memmap(temp_file, mode='w+', dtype='int16', shape=np_image.shape)
++    print("Number of dimensions", np_image.shape)
++    z, y, x = np_image.shape
+     if orientation == 'CORONAL':
++        spacing = xs, zs, ys
+         matrix.shape = y, z, x
+         for n in range(z):
+-            matrix[:, n, :] = d[n][::-1]
++            matrix[:, n, :] = np_image[n][::-1]
+     elif orientation == 'SAGITTAL':
+-        matrix.shape = x, z, y
++        spacing = zs, ys, xs
++        matrix.shape = y, x, z
+         for n in range(z):
+-            matrix[:, :, n] = d[n][::-1]
++            matrix[:, :, n] = np_image[n][::-1]
+     else:
+-        matrix[:] = d[:, ::-1, :]
++        spacing = xs, ys, zs
++        matrix[:] = np_image[:, ::-1, :]
+ 
+     matrix.flush()
+     scalar_range = matrix.min(), matrix.max()
+ 
+-    print("ORIENTATION", orientation, matrix.shape, matrix.min(), matrix.max(), d.min(), d.max())
+-
+-    return matrix, scalar_range, temp_file
++    return matrix, scalar_range, spacing, temp_file
+ 
+ 
+ def img2memmap(group):

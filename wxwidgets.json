@@ -1,0 +1,19 @@
+{
+    "name": "wxWidgets",
+    "rm-configure": true,
+    "subdir": "ext/wxWidgets",
+    "sources": [
+        {
+            "type": "archive",
+            "url": "https://files.pythonhosted.org/packages/b9/8b/31267dd6d026a082faed35ec8d97522c0236f2e083bf15aff64d982215e1/wxPython-4.0.7.post2.tar.gz",
+            "sha256": "5a229e695b64f9864d30a5315e0c1e4ff5e02effede0a07f16e8d856737a0c4e"
+        },
+        {
+            "type": "script",
+            "commands": [
+                "cp -p /usr/share/automake-*/config.{sub,guess} .",
+                "autoconf -f -B build/autoconf_prepend-include"
+            ]
+        }
+    ]
+}

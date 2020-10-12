@@ -1,7 +1,7 @@
 {
     "app-id": "br.gov.cti.invesalius",
     "runtime": "org.gnome.Platform",
-    "runtime-version": "3.36",
+    "runtime-version": "3.38",
     "sdk": "org.gnome.Sdk",
     "command": "runner.sh",
     "copy-icon": true,
@@ -12,11 +12,7 @@
         "--share=network",
         "--filesystem=home",
         "--filesystem=/media",
-        "--filesystem=/run/media",
-        "--filesystem=xdg-run/dconf",
-        "--filesystem=~/.config/dconf:ro",
-        "--talk-name=ca.desrt.dconf",
-        "--env=DCONF_USER_CONFIG_DIR=.config/dconf"
+        "--filesystem=/run/media"
     ],
     "cleanup": [
         "/include",
@@ -39,8 +35,8 @@
         "sources": [
             {
                 "type": "archive",
-                "url": "https://www.vtk.org/files/release/8.2/VTK-8.2.0.tar.gz",
-                "sha256": "34c3dc775261be5e45a8049155f7228b6bd668106c72a3c435d95730d17d57bb"
+                "url": "https://www.vtk.org/files/release/9.0/VTK-9.0.1.tar.gz",
+                "sha256": "1b39a5e191c282861e7af4101eaa8585969a2de05f5646c9199a161213a622c7"
             }
         ],
         "buildsystem": "cmake-ninja",
@@ -54,7 +50,8 @@
             "-DVTK_WRAP_PYTHON=ON",
             "-DVTK_WRAP_TCL=OFF",
             "-DCMAKE_BUILD_TYPE=Release",
-            "-DPYTHON_EXECUTABLE=/usr/bin/python3"
+            "-DPYTHON_EXECUTABLE=/usr/bin/python3",
+            "-DVTK_PYTHON_VERSION:STRING=3"
         ],
         "cleanup": [
             "/bin"
@@ -64,8 +61,8 @@
         "name": "swig",
         "sources":[{
             "type": "archive",
-            "url": "https://github.com/swig/swig/archive/rel-3.0.12.tar.gz",
-            "sha256": "64971de92b8a1da0b9ffb4b51e9214bb936c4dbbc304367899cdb07280b94af6"
+            "url": "https://github.com/swig/swig/archive/rel-4.0.1.tar.gz",
+            "sha256": "2eaf6fb89d071d1be280bf995c63360b3729860c0da64948123b5d7e4cfb6cb7"
         }],
         "config-opts": [
             "--without-pcre",
@@ -87,8 +84,8 @@
         "builddir": true,
         "sources": [{
             "type": "archive",
-            "url": "https://github.com/malaterre/GDCM/archive/v3.0.0.tar.gz",
-            "sha256": "3de524690102bfa3e9c3a81ff3f17733138183f76b7a5f7d072b20024a255680"
+            "url": "https://github.com/malaterre/GDCM/archive/v3.0.8.tar.gz",
+            "sha256": "47b96be345b1611784f9e65fc39367c7450c9a1ef81c21f8acddfb6207098315"
         }],
         "buildsystem": "cmake-ninja",
         "config-opts": [
@@ -97,8 +94,8 @@
             "-DCMAKE_BUILD_TYPE=Release",
             "-DGDCM_WRAP_PYTHON=ON",
             "-DPYTHON_EXECUTABLE=/usr/bin/python3",
-            "-DGDCM_INSTALL_PYTHONMODULE_DIR=/app/lib/python3.7/site-packages/",
-            "-DGDCM_USE_VTK=ON",
+            "-DGDCM_INSTALL_PYTHONMODULE_DIR=/app/lib/python3.8/site-packages/",
+            "-DGDCM_USE_VTK=OFF",
             "-DGDCM_BUILD_DOCBOOK_MANPAGES:BOOL=OFF"
         ],
         "cleanup": [
@@ -119,38 +116,22 @@
         "sources": [
             {
                 "type": "archive",
-                "url": "http://www.netlib.org/lapack/lapack-3.8.0.tar.gz",
-                "sha512": "17786cb7306fccdc9b4a242de7f64fc261ebe6a10b6ec55f519deb4cb673cb137e8742aa5698fd2dc52f1cd56d3bd116af3f593a01dcf6770c4dcc86c50b2a7f"
+                "url": "https://github.com/Reference-LAPACK/lapack/archive/v3.9.0.tar.gz",
+                "sha512": "424956ad941a60a4b71e0d451ad48db12a692f8a71a90f3ca7f71d6ecc1922f392746ea84df1c47a46577ed2db32e9e47ec44ad248207c5ac7da179becb712ef"
             }
         ]
     },
-    "shared-modules/glu/glu-9.json",
-    "python3-numpy.json",
-    "python3-scipy.json",
-    "python3-Pillow.json",
-    "python3-cython.json",
-    "python3-pathlib2.json",
     {
         "name": "SDL2",
         "config-opts": ["--disable-static"],
         "sources": [
             {
                 "type": "archive",
-                "url": "https://www.libsdl.org/release/SDL2-2.0.10.tar.gz",
-                "sha256": "b4656c13a1f0d0023ae2f4a9cf08ec92fffb464e0f24238337784159b8b91d57"
+                "url": "https://www.libsdl.org/release/SDL2-2.0.12.tar.gz",
+                "sha256": "349268f695c02efbc9b9148a70b85e58cefbbf704abd3e91be654db7f1e2c863"
             }
         ]
     },
-    "python3-wxpython.json",
-    "python3-setuptools_scm.json",
-    "python3-wheel.json",
-    "python3-python-dateutil.json",
-    "python3-matplotlib.json",
-    "python3-scikit-image.json",
-    "python3-bz2file.json",
-    "python3-nibabel.json",
-    "python3-pyserial.json",
-    "python3-psutil.json",
     {
         "name" : "hdf5",
         "no-autogen" : true,
@@ -162,21 +143,29 @@
             }
         ]
     },
-    {
-        "name" : "py_pkgconfig",
-        "buildsystem": "simple",
-        "build-commands": [
-            "pip3 install --no-index --find-links=\"file://${PWD}\" --prefix=${FLATPAK_DEST} pkgconfig"
-        ],
-        "sources" : [
-        {
-            "type": "file",
-            "url": "https://files.pythonhosted.org/packages/b4/2c/bf434cb5a6590417e1d4468050ec317ea17fd6231c2a256df4646c11e588/pkgconfig-1.5.1-py2.py3-none-any.whl",
-            "sha256": "cddf2d7ecadb272178a942eb852a9dee46bda2adcc36c3416b0fef47a4ed9f38"
-        }
-        ]
-    },
+    "shared-modules/glu/glu-9.json",
+    "python3-setuptools.json",
+    "python3-wheel.json",
+    "python3-six.json",
+    "python3-cython.json",
+    "python3-numpy.json",
+    "python3-scipy.json",
+    "python3-Pillow.json",
+    "python3-pathlib2.json",
+    "wxwidgets.json",
+    "python3-wxpython.json",
+    "python3-python-dateutil.json",
+    "python3-cppy.json",
+    "python3-matplotlib.json",
+    "python3-scikit-image.json",
+    "python3-bz2file.json",
+    "python3-nibabel.json",
+    "python3-pyserial.json",
+    "python3-psutil.json",
+    "python3-poetry.json",
+    "python3-py_pkgconfig.json",
     "python3-h5py.json",
+    "python3-pypubsub.json",
     {
         "name": "invesalius",
         "buildsystem": "simple",
@@ -214,6 +203,14 @@
             {
                 "type": "patch",
                 "path": "not_create_tempdir.patch"
+            },
+            {
+                "type": "patch",
+                "path": "remove_vtkgdcm.patch"
+            },
+            {
+                "type": "patch",
+                "path": "use_imageio.patch"
             }
         ]
     },
