@@ -1,22 +1,33 @@
-{ pkgs ? import <nixpkgs> {} }:
-
 let
+  pkgs = import <nixpkgs> {};
   mach-nix = import (builtins.fetchGit {
     url = "https://github.com/DavHau/mach-nix/";
-    ref = "refs/tags/2.4.1";
-  });
+    ref = "refs/tags/3.1.1";
+  }) {
+    # optionally bring your own nixpkgs
+    # pkgs = import <nixpkgs> {};
 
-custom_python = mach-nix.mkPython {
+    # optionally specify the python version
+    # python = "python38";
+
+    # optionally update pypi data revision from https://github.com/DavHau/pypi-deps-db
+    # pypiDataRev = "some_revision";
+    # pypiDataSha256 = "some_sha256";
+  };
+
+customPython = mach-nix.mkPython {
   requirements = ''
-    requirements-parser
-    pip
-    setuptools
+  requirements-parser
+  setuptools
   '';
 };
+
 in
-  pkgs.mkShell {
-    buildInputs = with pkgs; [
-      custom_python
-      flatpak-builder
-    ];
-  }
+pkgs.mkShell {
+  name = "flatpak";
+  buildInputs = with pkgs; [
+    customPython
+    flatpak-builder
+    cmake
+  ];
+}
