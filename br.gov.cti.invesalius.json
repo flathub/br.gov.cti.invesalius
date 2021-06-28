@@ -86,6 +86,8 @@
                 "dest-filename": "runner.sh",
                 "commands": [
                     "cd /app/invesalius",
+                    "export RUNFILES_DIR=/app/share/plaidml/",
+                    "export PLAIDML_NATIVE_PATH=/app/lib/libplaidml.so",
                     "exec python3 app.py \"$@\""
                 ]
             }
