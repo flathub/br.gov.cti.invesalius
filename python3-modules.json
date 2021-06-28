@@ -4,11 +4,6 @@
     "build-commands": [
         "pip3 install --exists-action=i --no-index --find-links=\"file://${PWD}\" --prefix=${FLATPAK_DEST} Cython Pillow Pypubsub configparser h5py imageio nibabel numpy plaidml-keras psutil pyserial python-gdcm scikit-image scipy vtk wxPython Theano"
     ],
-    "build-options": {
-        "env": {
-            "WXPYTHON_BUILD_ARGS": "--use_syswx"
-        }
-    },
     "sources": [
         {
             "type": "file",
@@ -17,8 +12,8 @@
         },
         {
             "type": "file",
-            "url": "https://files.pythonhosted.org/packages/c9/57/a6c81c1d6b8973d288ec6df0993a71a61318c862afc1de71fd3aa1ba1dcd/Pillow-8.1.0-cp38-cp38-manylinux1_x86_64.whl",
-            "sha256": "cdbbe7dff4a677fb555a54f9bc0450f2a21a93c5ba2b44e09e54fcb72d2bd13d"
+            "url": "https://files.pythonhosted.org/packages/6a/1c/6426906aed9215168f0885f8c750c89f7619d9a10709591d111af44c0b57/Pillow-8.2.0-cp38-cp38-manylinux1_x86_64.whl",
+            "sha256": "6c32cc3145928c4305d142ebec682419a6c0a8ce9e33db900027ddca1ec39178"
         },
         {
             "type": "file",
@@ -32,8 +27,8 @@
         },
         {
             "type": "file",
-            "url": "https://files.pythonhosted.org/packages/ee/ff/48bde5c0f013094d729fe4b0316ba2a24774b3ff1c52d924a8a4cb04078a/six-1.15.0-py2.py3-none-any.whl",
-            "sha256": "8b74bedcbbbaca38ff6d7491d76f2b06b3592611af620f8426e82dddb04a5ced"
+            "url": "https://files.pythonhosted.org/packages/d9/5a/e7c31adbe875f2abbb91bd84cf2dc52d792b5a01506781dbcf25c91daf11/six-1.16.0-py2.py3-none-any.whl",
+            "sha256": "8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"
         },
         {
             "type": "file",
@@ -47,8 +42,8 @@
         },
         {
             "type": "file",
-            "url": "https://files.pythonhosted.org/packages/c9/57/a6c81c1d6b8973d288ec6df0993a71a61318c862afc1de71fd3aa1ba1dcd/Pillow-8.1.0-cp38-cp38-manylinux1_x86_64.whl",
-            "sha256": "cdbbe7dff4a677fb555a54f9bc0450f2a21a93c5ba2b44e09e54fcb72d2bd13d"
+            "url": "https://files.pythonhosted.org/packages/6a/1c/6426906aed9215168f0885f8c750c89f7619d9a10709591d111af44c0b57/Pillow-8.2.0-cp38-cp38-manylinux1_x86_64.whl",
+            "sha256": "6c32cc3145928c4305d142ebec682419a6c0a8ce9e33db900027ddca1ec39178"
         },
         {
             "type": "file",
@@ -117,8 +112,8 @@
         },
         {
             "type": "file",
-            "url": "https://files.pythonhosted.org/packages/ee/ff/48bde5c0f013094d729fe4b0316ba2a24774b3ff1c52d924a8a4cb04078a/six-1.15.0-py2.py3-none-any.whl",
-            "sha256": "8b74bedcbbbaca38ff6d7491d76f2b06b3592611af620f8426e82dddb04a5ced"
+            "url": "https://files.pythonhosted.org/packages/d9/5a/e7c31adbe875f2abbb91bd84cf2dc52d792b5a01506781dbcf25c91daf11/six-1.16.0-py2.py3-none-any.whl",
+            "sha256": "8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"
         },
         {
             "type": "file",
@@ -167,13 +162,13 @@
         },
         {
             "type": "file",
-            "url": "https://files.pythonhosted.org/packages/b6/4a/b3bb4552f840cd7a902babdb8919b51ba12843ca787289813809cec4a8ce/tifffile-2021.3.5-py3-none-any.whl",
-            "sha256": "8ae99b2d7a80512628dc7f7de5a178525b28cb50cc69e82578a67106c28beee6"
+            "url": "https://files.pythonhosted.org/packages/73/d8/3cf7b9631a58edcae47af5f1238fb75d1b2b60b4fecf95bf10c899862937/tifffile-2021.6.14-py3-none-any.whl",
+            "sha256": "3201f5ba297b94328954724bd48dbf1b36ec14c4ee4cd5a2ec1aa3f83c486200"
         },
         {
             "type": "file",
-            "url": "https://files.pythonhosted.org/packages/ee/ff/48bde5c0f013094d729fe4b0316ba2a24774b3ff1c52d924a8a4cb04078a/six-1.15.0-py2.py3-none-any.whl",
-            "sha256": "8b74bedcbbbaca38ff6d7491d76f2b06b3592611af620f8426e82dddb04a5ced"
+            "url": "https://files.pythonhosted.org/packages/d9/5a/e7c31adbe875f2abbb91bd84cf2dc52d792b5a01506781dbcf25c91daf11/six-1.16.0-py2.py3-none-any.whl",
+            "sha256": "8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"
         },
         {
             "type": "file",
@@ -197,8 +192,8 @@
         },
         {
             "type": "file",
-            "url": "https://files.pythonhosted.org/packages/c9/57/a6c81c1d6b8973d288ec6df0993a71a61318c862afc1de71fd3aa1ba1dcd/Pillow-8.1.0-cp38-cp38-manylinux1_x86_64.whl",
-            "sha256": "cdbbe7dff4a677fb555a54f9bc0450f2a21a93c5ba2b44e09e54fcb72d2bd13d"
+            "url": "https://files.pythonhosted.org/packages/6a/1c/6426906aed9215168f0885f8c750c89f7619d9a10709591d111af44c0b57/Pillow-8.2.0-cp38-cp38-manylinux1_x86_64.whl",
+            "sha256": "6c32cc3145928c4305d142ebec682419a6c0a8ce9e33db900027ddca1ec39178"
         },
         {
             "type": "file",
@@ -212,8 +207,8 @@
         },
         {
             "type": "file",
-            "url": "https://files.pythonhosted.org/packages/9b/cd/dc52755d30ba41c60243235460961fc28022e5b6731f16c268667625baea/networkx-2.5-py3-none-any.whl",
-            "sha256": "8c5812e9f798d37c50570d15c4a69d5710a18d77bafc903ee9c5fba7454c616c"
+            "url": "https://files.pythonhosted.org/packages/f3/b7/c7f488101c0bb5e4178f3cde416004280fd40262433496830de8a8c21613/networkx-2.5.1-py3-none-any.whl",
+            "sha256": "0635858ed7e989f4c574c2328380b452df892ae85084144c73d8cd819f0c4e06"
         },
         {
             "type": "file",
@@ -227,8 +222,8 @@
         },
         {
             "type": "file",
-            "url": "https://files.pythonhosted.org/packages/ab/20/60cfe5d611ac86df07b7b1f9b9582f22f7eda5edbe2124ba85bdf3133822/matplotlib-3.3.4-cp38-cp38-manylinux1_x86_64.whl",
-            "sha256": "3d2eb9c1cc254d0ffa90bc96fde4b6005d09c2228f99dfd493a4219c1af99644"
+            "url": "https://files.pythonhosted.org/packages/1d/2b/9f02f1bcd69c521d8dc64049bd4ed29064f74ef508e6dd0089dc811a2a15/matplotlib-3.4.2-cp38-cp38-manylinux1_x86_64.whl",
+            "sha256": "5826f56055b9b1c80fef82e326097e34dc4af8c7249226b7dd63095a686177d1"
         },
         {
             "type": "file",
@@ -257,13 +252,13 @@
         },
         {
             "type": "file",
-            "url": "https://files.pythonhosted.org/packages/ee/ff/48bde5c0f013094d729fe4b0316ba2a24774b3ff1c52d924a8a4cb04078a/six-1.15.0-py2.py3-none-any.whl",
-            "sha256": "8b74bedcbbbaca38ff6d7491d76f2b06b3592611af620f8426e82dddb04a5ced"
+            "url": "https://files.pythonhosted.org/packages/d9/5a/e7c31adbe875f2abbb91bd84cf2dc52d792b5a01506781dbcf25c91daf11/six-1.16.0-py2.py3-none-any.whl",
+            "sha256": "8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"
         },
         {
             "type": "file",
-            "url": "https://files.pythonhosted.org/packages/c9/57/a6c81c1d6b8973d288ec6df0993a71a61318c862afc1de71fd3aa1ba1dcd/Pillow-8.1.0-cp38-cp38-manylinux1_x86_64.whl",
-            "sha256": "cdbbe7dff4a677fb555a54f9bc0450f2a21a93c5ba2b44e09e54fcb72d2bd13d"
+            "url": "https://files.pythonhosted.org/packages/6a/1c/6426906aed9215168f0885f8c750c89f7619d9a10709591d111af44c0b57/Pillow-8.2.0-cp38-cp38-manylinux1_x86_64.whl",
+            "sha256": "6c32cc3145928c4305d142ebec682419a6c0a8ce9e33db900027ddca1ec39178"
         },
         {
             "type": "file",
@@ -272,13 +267,13 @@
         },
         {
             "type": "file",
-            "url": "https://files.pythonhosted.org/packages/b9/8b/31267dd6d026a082faed35ec8d97522c0236f2e083bf15aff64d982215e1/wxPython-4.0.7.post2.tar.gz",
-            "sha256": "5a229e695b64f9864d30a5315e0c1e4ff5e02effede0a07f16e8d856737a0c4e"
+            "url": "https://files.pythonhosted.org/packages/cb/4f/1e21d3c079c973ba862a18f3be73c2bbe2e6bc25c96d94df605b5cbb494d/wxPython-4.1.0.tar.gz",
+            "sha256": "2e2475cb755ac8d93d2f9335c39c060b4d17ecb5d4e0e86626d1e2834b64a48b"
         },
         {
             "type": "file",
-            "url": "https://files.pythonhosted.org/packages/ee/ff/48bde5c0f013094d729fe4b0316ba2a24774b3ff1c52d924a8a4cb04078a/six-1.15.0-py2.py3-none-any.whl",
-            "sha256": "8b74bedcbbbaca38ff6d7491d76f2b06b3592611af620f8426e82dddb04a5ced"
+            "url": "https://files.pythonhosted.org/packages/d9/5a/e7c31adbe875f2abbb91bd84cf2dc52d792b5a01506781dbcf25c91daf11/six-1.16.0-py2.py3-none-any.whl",
+            "sha256": "8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"
         },
         {
             "type": "file",

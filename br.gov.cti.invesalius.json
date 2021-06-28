@@ -39,13 +39,13 @@
         ]
     },
     "shared-modules/glu/glu-9.json",
-    "wxwidgets.json",
     "python3-modules.json",
     {
         "name": "invesalius",
         "buildsystem": "simple",
         "build-commands": [
             "python3 setup.py build_ext --inplace",
+            "python3 setup.py build_plugins",
             "mkdir -p ${FLATPAK_DEST}/invesalius",
             "cp -r * ${FLATPAK_DEST}/invesalius/"
         ],
@@ -67,25 +67,10 @@
         ],
         "sources": [
             {
-                "type": "archive",
-                "url": "https://github.com/invesalius/invesalius3/archive/v3.1.99994.tar.gz",
-                "sha256": "493aff36e000f3a98aad5b6532fd2e0f960e779a6db2821390f05e5c9e2067eb"
-            },
-            {
-                "type": "patch",
-                "path": "comment_immediate_rendering.patch"
-            },
-            {
-                "type": "patch",
-                "path": "not_create_tempdir.patch"
-            },
-            {
-                "type": "patch",
-                "path": "remove_vtkgdcm.patch"
-            },
-            {
-                "type": "patch",
-                "path": "use_imageio.patch"
+                "type": "git",
+                "url": "https://github.com/invesalius/invesalius3.git",
+                "disable-submodules": false,
+                "commit": "v3.1.99995"
             }
         ]
     },
