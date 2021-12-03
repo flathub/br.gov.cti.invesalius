@@ -8,7 +8,7 @@ let
     # pkgs = import <nixpkgs> {};
 
     # optionally specify the python version
-    # python = "python38";
+    python = "python38";
 
     # optionally update pypi data revision from https://github.com/DavHau/pypi-deps-db
     # pypiDataRev = "some_revision";
@@ -19,6 +19,7 @@ customPython = mach-nix.mkPython {
   requirements = ''
   requirements-parser
   setuptools
+  pip
   '';
 };
 

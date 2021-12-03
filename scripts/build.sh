@@ -11,6 +11,7 @@ flatpak-builder \
     --arch=$(flatpak --default-arch) \
     --subject="build of br.gov.cti.invesalius, $(date)" \
     --sandbox \
+    --verbose \
     build \
     br.gov.cti.invesalius.json
 popd > /dev/null
