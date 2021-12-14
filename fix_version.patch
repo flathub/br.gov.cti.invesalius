@@ -1,0 +1,22 @@
+From 4993876e626c561853a70638cd90bf8c27eb74ad Mon Sep 17 00:00:00 2001
+From: Thiago Franco de Moraes <totonixsame@gmail.com>
+Date: Thu, 9 Dec 2021 15:12:24 -0300
+Subject: [PATCH] Fixing version
+
+---
+ invesalius/constants.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/invesalius/constants.py b/invesalius/constants.py
+index 3f81dc001..1d3944af3 100644
+--- a/invesalius/constants.py
++++ b/invesalius/constants.py
+@@ -28,7 +28,7 @@
+ from invesalius import inv_paths
+ 
+ #from invesalius.project import Project
+-INVESALIUS_VERSION = "3.1.99995"
++INVESALIUS_VERSION = "3.1.99996"
+ 
+ INVESALIUS_ACTUAL_FORMAT_VERSION = 1.1
+ 

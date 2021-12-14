@@ -71,6 +71,10 @@
                     "url": "https://github.com/invesalius/invesalius3.git",
                     "disable-submodules": false,
                     "commit": "v3.1.99996"
+                },
+                {
+                    "type": "patch",
+                    "path": "fix_version.patch"
                 }
             ]
         },
