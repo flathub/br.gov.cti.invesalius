@@ -197,7 +197,7 @@ with tempfile.TemporaryDirectory(prefix=tempdir_prefix) as tempdir:
     pip_download = flatpak_cmd + [
         'download',
         '--exists-action=i',
-        '--no-binary=:all',
+        '--no-binary=:all:',
         '--dest',
         tempdir,
         '-r',
