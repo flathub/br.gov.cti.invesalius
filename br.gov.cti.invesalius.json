@@ -75,6 +75,10 @@
                 {
                     "type": "patch",
                     "path": "fix_version.patch"
+                },
+                {
+                    "type": "shell",
+                    "commands": ["sed -i '/^import wx$/a  wx.DisableAsserts()' app.py"]
                 }
             ]
         },
