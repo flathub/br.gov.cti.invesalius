@@ -46,6 +46,11 @@
     <url type="bugtracker">https://github.com/invesalius/invesalius3/issues</url>
     <url type="translate">https://www.transifex.com/invesalius/invesalius3/</url>
     <releases>
+        <release version="3.1.99997" type="development" date="2022-02-03" urgency="high">
+            <description>
+                <p>Bug fixes</p>
+            </description>
+        </release>
         <release version="3.1.99996" type="development" date="2021-12-03" urgency="high">
             <description>
                 <p>Brain segmentation using pytorch</p>
