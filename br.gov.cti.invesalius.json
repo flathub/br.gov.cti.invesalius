@@ -39,7 +39,7 @@
             ]
         },
         "shared-modules/glu/glu-9.json",
-        "python3-modules.json",
+        "python3-requirements.json",
         {
             "name": "invesalius",
             "buildsystem": "simple",
@@ -70,7 +70,7 @@
                     "type": "git",
                     "url": "https://github.com/invesalius/invesalius3.git",
                     "disable-submodules": false,
-                    "commit": "v3.1.99997"
+                    "commit": "v3.1.99998"
                 },
                 {
                     "type": "shell",
