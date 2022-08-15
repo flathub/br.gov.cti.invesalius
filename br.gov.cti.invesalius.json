@@ -1,7 +1,7 @@
 {
     "app-id": "br.gov.cti.invesalius",
     "runtime": "org.gnome.Platform",
-    "runtime-version": "40",
+    "runtime-version": "42",
     "sdk": "org.gnome.Sdk",
     "command": "runner.sh",
     "copy-icon": true,
@@ -33,8 +33,8 @@
             "sources": [
                 {
                     "type": "archive",
-                    "url": "https://www.libsdl.org/release/SDL2-2.0.12.tar.gz",
-                    "sha256": "349268f695c02efbc9b9148a70b85e58cefbbf704abd3e91be654db7f1e2c863"
+                    "url": "https://www.libsdl.org/release/SDL2-2.0.22.tar.gz",
+                    "sha256": "fe7cbf3127882e3fc7259a75a0cb585620272c51745d3852ab9dd87960697f2e"
                 }
             ]
         },
