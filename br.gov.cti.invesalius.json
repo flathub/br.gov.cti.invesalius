@@ -1,7 +1,7 @@
 {
     "app-id": "br.gov.cti.invesalius",
     "runtime": "org.gnome.Platform",
-    "runtime-version": "42",
+    "runtime-version": "44",
     "sdk": "org.gnome.Sdk",
     "command": "runner.sh",
     "copy-icon": true,
