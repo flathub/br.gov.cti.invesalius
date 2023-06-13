@@ -57,7 +57,7 @@ if opts.yaml:
 
 def get_pypi_url(name: str, filename: str) -> str:
     url = 'https://pypi.org/pypi/{}/json'.format(name)
-    print('Extracting download url for', name)
+    print('Extracting download url for', name, url)
     with urllib.request.urlopen(url) as response:
         body = json.loads(response.read().decode('utf-8'))
         for release in body['releases'].values():
@@ -87,6 +87,8 @@ def get_package_name(filename: str) -> str:
         return '-'.join(segments[:len(segments) - 1])
     elif filename.endswith('whl'):
         segments = filename.split('-')
+        if 'triton' in filename or 'nvidia' in filename:
+            return segments[0]
         if len(segments) == 5:
             return segments[0]
         candidate = segments[:len(segments) - 4]
