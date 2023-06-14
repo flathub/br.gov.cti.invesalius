@@ -1,7 +1,7 @@
 {
     "app-id": "br.gov.cti.invesalius",
     "runtime": "org.gnome.Platform",
-    "runtime-version": "42",
+    "runtime-version": "44",
     "sdk": "org.gnome.Sdk",
     "command": "runner.sh",
     "copy-icon": true,
@@ -70,7 +70,7 @@
                     "type": "git",
                     "url": "https://github.com/invesalius/invesalius3.git",
                     "disable-submodules": false,
-                    "commit": "v3.1.99998"
+                    "commit": "97422a727868e1a7403cd4ca4db747ec3f399077"
                 },
                 {
                     "type": "shell",
