@@ -27,17 +27,7 @@
         "/bin/w*"
     ],
     "modules": [
-        {
-            "name": "SDL2",
-            "config-opts": ["--disable-static"],
-            "sources": [
-                {
-                    "type": "archive",
-                    "url": "https://www.libsdl.org/release/SDL2-2.0.22.tar.gz",
-                    "sha256": "fe7cbf3127882e3fc7259a75a0cb585620272c51745d3852ab9dd87960697f2e"
-                }
-            ]
-        },
+        "shared-modules/SDL2/SDL2-no-libdecor.json",
         "shared-modules/glu/glu-9.json",
         "python3-requirements.json",
         {
