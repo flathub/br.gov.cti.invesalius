@@ -1,114 +1,116 @@
 {
-    "app-id": "br.gov.cti.invesalius",
-    "runtime": "org.gnome.Platform",
-    "runtime-version": "44",
-    "sdk": "org.gnome.Sdk",
-    "command": "runner.sh",
-    "copy-icon": true,
-    "finish-args": [
-        "--share=ipc",
-        "--socket=x11",
-        "--device=dri",
-        "--share=network",
-        "--filesystem=home",
-        "--filesystem=/media",
-        "--filesystem=/run/media"
-    ],
-    "cleanup": [
-        "/include",
-        "/lib/pkgconfig",
-        "/lib/cmake",
-        "/share/cmake",
-        "/share/doc",
-        "/share/hdf5_examples",
-        "/bin/g*",
-        "/bin/h*",
-        "/bin/s*",
-        "/bin/w*"
-    ],
-    "modules": [
-        "shared-modules/SDL2/SDL2-no-libdecor.json",
-        "shared-modules/glu/glu-9.json",
-        "python3-requirements.json",
+  "app-id": "br.gov.cti.invesalius",
+  "runtime": "org.gnome.Platform",
+  "runtime-version": "46",
+  "sdk": "org.gnome.Sdk",
+  "command": "runner.sh",
+  "copy-icon": true,
+  "finish-args": [
+    "--share=ipc",
+    "--socket=x11",
+    "--device=dri",
+    "--share=network",
+    "--filesystem=home",
+    "--filesystem=/media",
+    "--filesystem=/run/media"
+  ],
+  "cleanup": [
+    "/include",
+    "/lib/pkgconfig",
+    "/lib/cmake",
+    "/share/cmake",
+    "/share/doc",
+    "/share/hdf5_examples",
+    "/bin/g*",
+    "/bin/h*",
+    "/bin/s*",
+    "/bin/w*"
+  ],
+  "modules": [
+    "shared-modules/SDL2/SDL2-no-libdecor.json",
+    "shared-modules/glu/glu-9.json",
+    "python3-requirements.json",
+    {
+      "name": "invesalius",
+      "buildsystem": "simple",
+      "build-commands": [
+        "python3 setup.py build_ext --inplace",
+        "python3 setup.py build_plugins",
+        "mkdir -p ${FLATPAK_DEST}/invesalius",
+        "cp -r * ${FLATPAK_DEST}/invesalius/"
+      ],
+      "cleanup": [
+        "/invesalius/build",
+        "/invesalius/contrib",
+        "/invesalius/po",
+        "/invesalius/Dockerfile",
+        "/invesalius/docs/devel",
+        "/invesalius/docs/user_guide_en_source",
+        "/invesalius/docs/user_guide_figures",
+        "/invesalius/docs/user_guide_pt_BR_source",
+        "*.pyx",
+        "*.pxd",
+        "*.cpp",
+        "*.c",
+        "*.*ignore",
+        "*.git"
+      ],
+      "sources": [
         {
-            "name": "invesalius",
-            "buildsystem": "simple",
-            "build-commands": [
-                "python3 setup.py build_ext --inplace",
-                "python3 setup.py build_plugins",
-                "mkdir -p ${FLATPAK_DEST}/invesalius",
-                "cp -r * ${FLATPAK_DEST}/invesalius/"
-            ],
-            "cleanup": [
-                "/invesalius/build",
-                "/invesalius/contrib",
-                "/invesalius/po",
-                "/invesalius/Dockerfile",
-                "/invesalius/docs/devel",
-                "/invesalius/docs/user_guide_en_source",
-                "/invesalius/docs/user_guide_figures",
-                "/invesalius/docs/user_guide_pt_BR_source",
-                "*.pyx",
-                "*.pxd",
-                "*.cpp",
-                "*.c",
-                "*.*ignore",
-                "*.git"
-            ],
-            "sources": [
-                {
-                    "type": "git",
-                    "url": "https://github.com/invesalius/invesalius3.git",
-                    "disable-submodules": false,
-                    "commit": "97422a727868e1a7403cd4ca4db747ec3f399077"
-                },
-                {
-                    "type": "shell",
-                    "commands": ["sed -i '/^import wx$/a  wx.DisableAsserts()' app.py"]
-                }
-            ]
+          "type": "git",
+          "url": "https://github.com/invesalius/invesalius3.git",
+          "disable-submodules": false,
+          "commit": "97422a727868e1a7403cd4ca4db747ec3f399077"
         },
         {
-            "name": "runner",
-            "buildsystem": "simple",
-            "build-commands": [
-                "install -D runner.sh /app/bin/runner.sh"
-            ],
-            "sources": [
-                {
-                    "type": "script",
-                    "dest-filename": "runner.sh",
-                    "commands": [
-                        "cd /app/invesalius",
-                        "export RUNFILES_DIR=/app/share/plaidml/",
-                        "export PLAIDML_NATIVE_PATH=/app/lib/libplaidml.so",
-                        "exec python3 app.py \"$@\""
-                    ]
-                }
-            ]
-        },
-        {
-            "name": "metadata",
-            "buildsystem": "simple",
-            "build-commands": [
-                "install -D -t /app/share/applications/ br.gov.cti.invesalius.desktop",
-                "install -D -t /app/share/icons/hicolor/256x256/apps/ br.gov.cti.invesalius.png",
-                "install -D -t /app/share/appdata/ br.gov.cti.invesalius.appdata.xml"
-            ],
-            "sources": [
-                {
-                    "type": "file",
-                    "path": "br.gov.cti.invesalius.desktop"
-                },
-                {
-                    "type": "file",
-                    "path": "br.gov.cti.invesalius.png"
-                },
-                {
-                    "type": "file",
-                    "path": "br.gov.cti.invesalius.appdata.xml"
-                }
-            ]
+          "type": "shell",
+          "commands": [
+            "sed -i '/^import wx$/a  wx.DisableAsserts()' app.py"
+          ]
         }
-    ]
+      ]
+    },
+    {
+      "name": "runner",
+      "buildsystem": "simple",
+      "build-commands": [
+        "install -D runner.sh /app/bin/runner.sh"
+      ],
+      "sources": [
+        {
+          "type": "script",
+          "dest-filename": "runner.sh",
+          "commands": [
+            "cd /app/invesalius",
+            "export RUNFILES_DIR=/app/share/plaidml/",
+            "export PLAIDML_NATIVE_PATH=/app/lib/libplaidml.so",
+            "exec python3 app.py \"$@\""
+          ]
+        }
+      ]
+    },
+    {
+      "name": "metadata",
+      "buildsystem": "simple",
+      "build-commands": [
+        "install -D -t /app/share/applications/ br.gov.cti.invesalius.desktop",
+        "install -D -t /app/share/icons/hicolor/256x256/apps/ br.gov.cti.invesalius.png",
+        "install -D -t /app/share/appdata/ br.gov.cti.invesalius.appdata.xml"
+      ],
+      "sources": [
+        {
+          "type": "file",
+          "path": "br.gov.cti.invesalius.desktop"
+        },
+        {
+          "type": "file",
+          "path": "br.gov.cti.invesalius.png"
+        },
+        {
+          "type": "file",
+          "path": "br.gov.cti.invesalius.appdata.xml"
+        }
+      ]
+    }
+  ]
 }
