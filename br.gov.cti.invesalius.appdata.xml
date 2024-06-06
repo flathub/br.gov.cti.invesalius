@@ -8,7 +8,9 @@
     <project_license>GPL-2.0-only</project_license>
     <content_rating type="oars-1.0" />
     <update_contact>thiago.moraes_AT_cti.gov.br</update_contact>
-    <developer_name>Centro de Tecnologia da Informação Renato Archer</developer_name>
+    <developer id="br.gov.cti">
+        <name>Centro de Tecnologia da Informação Renato Archer</name>
+    </developer>
     <translation type="gettext">InVesalius</translation>
     <description>
         <p>
@@ -35,14 +37,14 @@
     </description>
     <launchable type="desktop-id">br.gov.cti.invesalius.desktop</launchable>
     <screenshots>
-        <screenshot>
+        <screenshot type="default">
             <image>https://invesalius.github.io/images/screenshot/screen1.png</image>
         </screenshot>
         <screenshot>
             <image>https://invesalius.github.io/images/screenshot/screen2.png</image>
         </screenshot>
     </screenshots>
-    <url type="homepage">https://www.cti.gov.br/invesalius/</url>
+    <url type="homepage">https://invesalius.github.io/</url>
     <url type="bugtracker">https://github.com/invesalius/invesalius3/issues</url>
     <url type="translate">https://www.transifex.com/invesalius/invesalius3/</url>
     <releases>
