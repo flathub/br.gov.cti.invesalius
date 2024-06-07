@@ -64,18 +64,18 @@
         },
         {
           "type": "shell",
-          "commands": [
-            "sed -i '/^import wx$/a  wx.DisableAsserts()' app.py"
-          ]
+          "commands": ["sed -i '/^import wx$/a  wx.DisableAsserts()' app.py"]
+        },
+        {
+          "type": "patch",
+          "path": "remove_npy_no_deprecated_api_cython.patch"
         }
       ]
     },
     {
       "name": "runner",
       "buildsystem": "simple",
-      "build-commands": [
-        "install -D runner.sh /app/bin/runner.sh"
-      ],
+      "build-commands": ["install -D runner.sh /app/bin/runner.sh"],
       "sources": [
         {
           "type": "script",
