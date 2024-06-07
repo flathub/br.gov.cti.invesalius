@@ -1,8 +1,8 @@
 {
   "app-id": "br.gov.cti.invesalius",
-  "runtime": "org.gnome.Platform",
-  "runtime-version": "46",
-  "sdk": "org.gnome.Sdk",
+  "runtime": "org.freedesktop.Platform",
+  "runtime-version": "23.08",
+  "sdk": "org.freedesktop.Sdk",
   "command": "runner.sh",
   "copy-icon": true,
   "finish-args": [
@@ -60,22 +60,22 @@
           "type": "git",
           "url": "https://github.com/invesalius/invesalius3.git",
           "disable-submodules": false,
-          "commit": "97422a727868e1a7403cd4ca4db747ec3f399077"
+          "commit": "7240e1c78768bb5e3f43e0cfe1484541cbd72f8a"
         },
         {
           "type": "shell",
-          "commands": [
-            "sed -i '/^import wx$/a  wx.DisableAsserts()' app.py"
-          ]
+          "commands": ["sed -i '/^import wx$/a  wx.DisableAsserts()' app.py"]
+        },
+        {
+          "type": "patch",
+          "path": "remove_npy_no_deprecated_api_cython.patch"
         }
       ]
     },
     {
       "name": "runner",
       "buildsystem": "simple",
-      "build-commands": [
-        "install -D runner.sh /app/bin/runner.sh"
-      ],
+      "build-commands": ["install -D runner.sh /app/bin/runner.sh"],
       "sources": [
         {
           "type": "script",
