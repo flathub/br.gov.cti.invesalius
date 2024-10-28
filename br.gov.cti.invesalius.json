@@ -60,7 +60,7 @@
           "type": "git",
           "url": "https://github.com/invesalius/invesalius3.git",
           "disable-submodules": false,
-          "commit": "7240e1c78768bb5e3f43e0cfe1484541cbd72f8a"
+          "commit": "e4dda58f5c9937af0c34d483ffc267168e47cf58"
         },
         {
           "type": "shell",
