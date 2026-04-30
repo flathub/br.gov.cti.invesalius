@@ -1,0 +1,46 @@
+diff --git a/invesalius_cy/cy_mesh.pyx b/invesalius_cy/cy_mesh.pyx
+index 22e63b84..2f76789e 100644
+--- a/invesalius_cy/cy_mesh.pyx
++++ b/invesalius_cy/cy_mesh.pyx
+@@ -1,5 +1,4 @@
+ # distutils: language = c++
+-# distutils: define_macros=NPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION
+ # cython: boundscheck=False
+ # cython: wraparound=False
+ # cython: initializedcheck=False
+diff --git a/invesalius_cy/floodfill.pyx b/invesalius_cy/floodfill.pyx
+index ec38f973..f0bc90ed 100644
+--- a/invesalius_cy/floodfill.pyx
++++ b/invesalius_cy/floodfill.pyx
+@@ -1,4 +1,3 @@
+-# distutils: define_macros=NPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION
+ # cython: boundscheck=False
+ # cython: wraparound=False
+ # cython: initializedcheck=False
+diff --git a/invesalius_cy/interpolation.pyx b/invesalius_cy/interpolation.pyx
+index 1de34ae7..d26cc59e 100644
+--- a/invesalius_cy/interpolation.pyx
++++ b/invesalius_cy/interpolation.pyx
+@@ -1,4 +1,3 @@
+-# distutils: define_macros=NPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION
+ # cython: boundscheck=False
+ # cython: wraparound=False
+ # cython: initializedcheck=False
+diff --git a/invesalius_cy/mips.pyx b/invesalius_cy/mips.pyx
+index 5055b91d..949b09c1 100644
+--- a/invesalius_cy/mips.pyx
++++ b/invesalius_cy/mips.pyx
+@@ -1,4 +1,3 @@
+-# distutils: define_macros=NPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION
+ # cython: boundscheck=False
+ # cython: wraparound=False
+ # cython: initializedcheck=False
+diff --git a/invesalius_cy/transforms.pyx b/invesalius_cy/transforms.pyx
+index c84dd302..1d5c23a6 100644
+--- a/invesalius_cy/transforms.pyx
++++ b/invesalius_cy/transforms.pyx
+@@ -1,4 +1,3 @@
+-# distutils: define_macros=NPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION
+ # cython: boundscheck=False
+ # cython: wraparound=False
+ # cython: initializedcheck=False
