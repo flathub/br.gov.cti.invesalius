@@ -12,5 +12,5 @@ scikit-image==0.20.0
 scipy==1.10.1
 vtk==9.2.6
 wxPython==4.2.1
-torch==2.0.0
+torch==2.13.0
 pyacvd==0.2.9
