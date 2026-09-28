@@ -1,8 +1,8 @@
 {
   "app-id": "br.gov.cti.invesalius",
-  "runtime": "org.freedesktop.Platform",
-  "runtime-version": "23.08",
-  "sdk": "org.freedesktop.Sdk",
+  "runtime": "org.gnome.Platform",
+  "runtime-version": "51",
+  "sdk": "org.gnome.Sdk",
   "command": "runner.sh",
   "copy-icon": true,
   "finish-args": [
@@ -27,8 +27,9 @@
     "/bin/w*"
   ],
   "modules": [
-    "shared-modules/SDL2/SDL2-no-libdecor.json",
     "shared-modules/glu/glu-9.json",
+    "python3-meson-python.json",
+    "python3-pybind11.json",
     "python3-requirements.json",
     {
       "name": "invesalius",
@@ -68,7 +69,7 @@
         },
         {
           "type": "patch",
-          "path": "remove_npy_no_deprecated_api_cython.patch"
+          "path": "Updated-python-libs-to-work-with-python314.patch"
         }
       ]
     },
