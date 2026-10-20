@@ -30,6 +30,7 @@
     "shared-modules/glu/glu-9.json",
     "python3-meson-python.json",
     "python3-pybind11.json",
+    "python3-setuptools_scm.json",
     "python3-requirements.json",
     {
       "name": "invesalius",
